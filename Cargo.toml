@@ -1,0 +1,17 @@
+[package]
+name = "command-blocks"
+version = "0.1.0"
+edition = "2024"
+description = "A bilingual language with a conservative Minecraft datapack backend"
+license = "MIT"
+
+[[bin]]
+name = "cb"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+
+[dependencies]

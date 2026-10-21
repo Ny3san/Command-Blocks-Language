@@ -1,0 +1,6 @@
+/target/
+/dist/
+*.cb.bak
+.env
+*.secret
+.cb-libraries
