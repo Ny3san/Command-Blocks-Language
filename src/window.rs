@@ -1,14 +1,6 @@
 //! Native controls; callbacks queue events, never borrow the interpreter.
+#[cfg(windows)]
 use crate::diagnostic::{Error, Result, Span};
-
-fn failure(span: Span) -> Error {
-    Error::new(
-        "CB401",
-        span,
-        "Não foi possível executar a operação de janela.",
-        "Could not perform window operation.",
-    )
-}
 
 #[cfg(windows)]
 mod native {
@@ -20,6 +12,15 @@ mod native {
         ptr::null_mut,
     };
     type Handle = *mut c_void;
+
+    fn failure(span: Span) -> Error {
+        Error::new(
+            "CB401",
+            span,
+            "Não foi possível executar a operação de janela.",
+            "Could not perform window operation.",
+        )
+    }
     #[repr(C)]
     struct Point {
         x: i32,

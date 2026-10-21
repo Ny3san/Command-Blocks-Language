@@ -1,48 +1,23 @@
+# Build artifacts
 /target/
 /dist/
+
+# Packaged binaries and archives
+*.exe
+*.bin
+*.rar
+*.vsix
+
+# VS Code editor
+.vscode/
+
+# Node / extension development
+node_modules/
+
+# CB project files (gerados em tempo de execução)
 *.cb.bak
+.cb-libraries
+
+# Environment secrets
 .env
 *.secret
-.cb-libraries
-@"
-target/
-*.rar
-*.vsix
-*.exe
-*.bak
-.vscode/
-# Arquivos locais e gerados - Command Blocks
-target/
-*.rar
-*.vsix
-*.exe
-*.bak
-.vscode/
-node_modules/
-
-# Arquivos locais e gerados - Command Blocks
-target/
-*.rar
-*.vsix
-*.exe
-*.bak
-.vscode/
-node_modules/
-
-# Arquivos locais e gerados - Command Blocks
-target/
-*.rar
-*.vsix
-*.exe
-*.bak
-.vscode/
-node_modules/
-
-# Gerados/local - Command Blocks
-target/
-*.rar
-*.vsix
-*.exe
-*.bak
-.vscode/
-node_modules/

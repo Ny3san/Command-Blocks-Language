@@ -6,11 +6,12 @@ pub struct Response {
     pub status: i32,
     pub body: String,
 }
+#[allow(dead_code)] // fields used only in cfg(windows) native module
 pub(crate) struct Url {
-    pub host: String,
-    pub port: u16,
-    pub path: String,
-    pub secure: bool,
+    pub(crate) host: String,
+    pub(crate) port: u16,
+    pub(crate) path: String,
+    pub(crate) secure: bool,
 }
 fn error(span: Span) -> Error {
     Error::new(
