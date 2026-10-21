@@ -35,6 +35,64 @@ impl Drop for Temp {
 }
 
 #[test]
+fn help_and_version_are_localized_non_executing_and_consistent() {
+    let tmp = Temp::new();
+    let english = tmp.cb(&["help", "run", "--lang", "en"]);
+    assert!(english.status.success());
+    assert!(english.stderr.is_empty());
+    assert_eq!(
+        String::from_utf8_lossy(&english.stdout).replace("\r\n", "\n"),
+        include_str!("golden/help-run.en.txt").replace("\r\n", "\n")
+    );
+    assert_eq!(
+        english.stdout,
+        tmp.cb(&["run", "--help", "--lang=en"]).stdout
+    );
+    let portuguese = tmp.cb(&["help", "run"]);
+    assert!(portuguese.status.success());
+    assert!(portuguese.stderr.is_empty());
+    assert_eq!(
+        String::from_utf8_lossy(&portuguese.stdout).replace("\r\n", "\n"),
+        include_str!("golden/help-run.pt-br.txt").replace("\r\n", "\n")
+    );
+    assert_eq!(
+        tmp.cb(&["help", "--lang", "en"]).stdout,
+        tmp.cb(&["--help", "--lang", "en"]).stdout
+    );
+    assert_eq!(
+        tmp.cb(&["--version"]).stdout,
+        tmp.cb(&["--lang=en", "--version"]).stdout
+    );
+    for args in [
+        vec!["run", "--version"],
+        vec!["--help", "--version"],
+        vec!["--help", "--help"],
+        vec!["help", "unknown"],
+        vec!["unknown", "--help"],
+        vec!["--help", "--lang", "invalid"],
+    ] {
+        let result = tmp.cb(&args);
+        assert_eq!(result.status.code(), Some(1), "{args:?}");
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("CB000"));
+    }
+    assert!(!tmp.0.join("main.cb").exists());
+    for command in [
+        "run", "check", "convert", "build", "format", "test", "create", "install", "list", "info",
+        "help",
+    ] {
+        for lang in ["pt-br", "en"] {
+            let result = tmp.cb(&[command, "--help", "--lang", lang]);
+            assert!(result.status.success(), "{command} {lang}");
+            assert!(result.stderr.is_empty());
+            let output = String::from_utf8(result.stdout).unwrap();
+            assert!(output.contains(&format!("cb {command}")));
+            assert!(output.contains(if lang == "en" { "Example:" } else { "Exemplo:" }));
+        }
+    }
+}
+
+#[test]
 fn app_template_runs_in_both_languages_and_preserves_existing_projects() {
     let tmp = Temp::new();
     for (directory, lang, expected) in [
@@ -79,6 +137,15 @@ fn cli_runs_checks_builds_and_tests() {
         String::from_utf8_lossy(&result.stderr)
     );
     assert_eq!(String::from_utf8(result.stdout).unwrap().trim(), "native");
+    let help = Command::new(tmp.0.join(exe))
+        .args(["--help", "--lang", "en"])
+        .output()
+        .unwrap();
+    assert!(help.status.success());
+    assert!(help.stderr.is_empty());
+    let help = String::from_utf8(help.stdout).unwrap();
+    assert!(help.contains("Usage: cb COMMAND"));
+    assert!(!help.lines().any(|line| line == "native"));
     assert!(
         !tmp.cb(&["build", "main.cb", "--output", exe])
             .status

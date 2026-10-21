@@ -10,6 +10,7 @@ Linguagem bilíngue para scripts e datapacks, implementada em **Rust**. Núcleo 
 |---|---|---|
 | Aprender com um programa pequeno | [Primeiros passos](docs/pt-br/primeiros-passos.md) | Implementado; base com 20 testes passando |
 | Criar um aplicativo de terminal | [Aplicativos e automações](docs/pt-br/aplicativos.md) | Scripts e empacotamento nativo |
+| Criar janelas no Windows | [Janelas nativas](docs/pt-br/janelas.md) | Implementação em validação |
 | Criar sistemas dentro do Minecraft | [Datapacks e command blocks](docs/pt-br/minecraft.md) | Subconjunto Java 1.21/1.21.1 |
 | Conectar um aplicativo ao Minecraft | [Integrações](docs/pt-br/integracoes.md) | Cliente local; precisa de servidor/plugin |
 | Criar um bot Discord | [Estado do Discord](docs/pt-br/integracoes.md#discord) | Interface inicial; bot ainda não funcional |

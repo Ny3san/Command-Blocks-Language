@@ -47,7 +47,9 @@ pub fn analyze(mut body: Vec<Stmt>) -> Result<Program> {
             }
             StmtKind::Permission(name) => {
                 *name = catalog::canonical(name);
-                if !["file", "process", "net", "minecraft_bridge"].contains(&name.as_str()) {
+                if !["file", "process", "net", "minecraft_bridge", "window"]
+                    .contains(&name.as_str())
+                {
                     return Err(error(
                         s.span,
                         "Permissão desconhecida.",
@@ -312,12 +314,12 @@ impl Analyzer {
                     for (arg, ty) in args.iter_mut().zip(spec.args) {
                         self.require(arg, ty)?;
                     }
-                    if let Some(permission) = spec.permission {
-                        if !self.permissions.contains(permission) {
-                            return Err(Error::new("CB301", e.span, "Permissão ausente no programa.", "Missing program permission.").hint(
+                    if let Some(permission) = spec.permission
+                        && !self.permissions.contains(permission)
+                    {
+                        return Err(Error::new("CB301", e.span, "Permissão ausente no programa.", "Missing program permission.").hint(
                                 format!("Declare permissao {permission} e autorize com --allow {permission}."),
                                 format!("Declare permission {permission} and grant --allow {permission}.")));
-                        }
                     }
                     spec.result
                 } else if let Some(count) = self.functions.get(name) {
@@ -403,10 +405,10 @@ pub fn expressions(stmt: &Stmt, visit: &mut impl FnMut(&Expr) -> Result<()>) -> 
 pub fn check_external(program: &Program) -> Result<()> {
     for s in &program.body {
         expressions(s, &mut |e| {
-            if let ExprKind::Call(name, _) = &e.kind {
-                if catalog::spec(name).is_some_and(|s| s.environment == "minecraft") {
-                    return Err(crate::diagnostic::incompatible(e.span));
-                }
+            if let ExprKind::Call(name, _) = &e.kind
+                && catalog::spec(name).is_some_and(|s| s.environment == "minecraft")
+            {
+                return Err(crate::diagnostic::incompatible(e.span));
             }
             Ok(())
         })?;

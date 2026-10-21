@@ -1,0 +1,4 @@
+variavel usuario = json.ler('{"nome":"Alex","itens":["pedra","madeira"]}')
+imprimir(usuario["nome"])
+verificar(json.validar(json.escrever(usuario)))
+imprimir(json.escrever(usuario))

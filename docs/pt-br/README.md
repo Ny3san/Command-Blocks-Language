@@ -1,5 +1,15 @@
 # Manual — Command Blocks 0.1
 
+[Janelas nativas (em validação)](janelas.md)
+
+[Ajuda da CLI e códigos de saída](cli.md)
+
+[Diagnósticos e migração da API Rust](diagnosticos.md)
+
+[Biblioteca JSON](json.md)
+
+[Rede e APIs (em validação)](rede.md)
+
 ## Instalação e primeiros passos
 
 O compilador e o interpretador são escritos em Rust; o núcleo não possui dependências de terceiros. Compile com Rust estável e um linker apropriado:

@@ -52,11 +52,14 @@ pub struct Runtime {
     pub max_steps: u64,
     pub steps: u64,
     pub bridge_requests: Vec<Instant>,
+    pub(crate) discord: Option<crate::discord::Client>,
     globals: Env,
     depth: usize,
     secrets: Vec<String>,
     started: Instant,
     random: u64,
+    #[cfg(windows)]
+    window: Option<crate::window::Window>,
 }
 impl Runtime {
     pub fn new(program: Program, root: impl AsRef<Path>) -> Self {
@@ -84,11 +87,14 @@ impl Runtime {
             max_steps: 100000,
             steps: 0,
             bridge_requests: vec![],
+            discord: None,
             globals: Scope::new(None),
             depth: 0,
             secrets,
             started: Instant::now(),
             random: seed | 1,
+            #[cfg(windows)]
+            window: None,
         }
     }
     pub fn redact(&self, text: &str) -> String {
@@ -341,19 +347,19 @@ impl Runtime {
                     if spec.environment == "minecraft" {
                         return Err(incompatible(e.span));
                     }
-                    if let Some(p) = spec.permission {
-                        if !self.allow.contains(p) {
-                            return Err(Error::new(
-                                "CB301",
-                                e.span,
-                                "Permissão não autorizada na CLI.",
-                                "Permission not granted on the CLI.",
-                            )
-                            .hint(
-                                format!("Autorize código confiável com --allow {p}."),
-                                format!("Grant trusted code --allow {p}."),
-                            ));
-                        }
+                    if let Some(p) = spec.permission
+                        && !self.allow.contains(p)
+                    {
+                        return Err(Error::new(
+                            "CB301",
+                            e.span,
+                            "Permissão não autorizada na CLI.",
+                            "Permission not granted on the CLI.",
+                        )
+                        .hint(
+                            format!("Autorize código confiável com --allow {p}."),
+                            format!("Grant trusted code --allow {p}."),
+                        ));
                     }
                     self.builtin(name, &values, e.span)?
                 } else {
@@ -428,7 +434,101 @@ impl Runtime {
         }
         Ok(path)
     }
+    fn window_call(&mut self, name: &str, a: &[Value], span: Span) -> Result<Value> {
+        #[cfg(not(windows))]
+        {
+            let _ = (name, a);
+            Err(Error::new(
+                "CB201",
+                span,
+                "Janelas nativas disponíveis apenas no Windows nesta versão.",
+                "Native windows are available only on Windows in this version.",
+            ))
+        }
+        #[cfg(windows)]
+        {
+            let text = |i: usize| -> Result<String> {
+                match &a[i] {
+                    Value::Text(s) => Ok(s.clone()),
+                    _ => Err(type_error(span)),
+                }
+            };
+            let int = |i: usize| -> Result<i32> {
+                match a[i] {
+                    Value::Int(n) => Ok(n),
+                    _ => Err(type_error(span)),
+                }
+            };
+            if name == "window.open" {
+                if self.window.as_ref().is_some_and(|w| w.is_open()) {
+                    return Err(type_error(span));
+                }
+                let title = self.redact(&text(0)?);
+                self.window = Some(crate::window::Window::open(
+                    &title,
+                    int(1)?,
+                    int(2)?,
+                    true,
+                    span,
+                )?);
+            } else if name == "window.run" {
+                while self.window.as_ref().is_some_and(|w| w.is_open()) {
+                    let event = self.window.as_mut().and_then(|w| w.poll());
+                    if let Some(event) = event {
+                        self.emit(&event)?;
+                    }
+                    std::thread::sleep(Duration::from_millis(8));
+                }
+            } else {
+                let clean = if matches!(name, "window.label" | "window.input" | "window.button") {
+                    Some(self.redact(&text(0)?))
+                } else if name == "window.set_text" {
+                    Some(self.redact(&text(1)?))
+                } else {
+                    None
+                };
+                let window = self.window.as_mut().ok_or_else(|| {
+                    Error::new(
+                        "CB401",
+                        span,
+                        "Abra uma janela primeiro.",
+                        "Open a window first.",
+                    )
+                })?;
+                match name {
+                    "window.close" => window.close(),
+                    "window.text" => return Ok(Value::Text(window.text(int(0)?, span)?)),
+                    "window.set_text" => {
+                        window.set_text(int(0)?, clean.as_deref().unwrap(), span)?
+                    }
+                    "window.label" | "window.input" | "window.button" => {
+                        let button = name == "window.button";
+                        let offset = if button { 2 } else { 1 };
+                        let event = if button { text(1)? } else { String::new() };
+                        let rect = [
+                            int(offset)?,
+                            int(offset + 1)?,
+                            int(offset + 2)?,
+                            int(offset + 3)?,
+                        ];
+                        return Ok(Value::Int(window.control(
+                            name.split('.').nth(1).unwrap(),
+                            clean.as_deref().unwrap(),
+                            &event,
+                            rect,
+                            span,
+                        )?));
+                    }
+                    _ => return Err(type_error(span)),
+                }
+            }
+            Ok(Value::Null)
+        }
+    }
     fn builtin(&mut self, name: &str, a: &[Value], span: Span) -> Result<Value> {
+        if name.starts_with("window.") {
+            return self.window_call(name, a, span);
+        }
         use Value::*;
         let text = |i: usize| -> Result<&str> {
             if let Text(s) = &a[i] {
@@ -438,6 +538,45 @@ impl Runtime {
             }
         };
         let num = |i: usize| -> Result<f64> { a[i].number().ok_or_else(|| type_error(span)) };
+        if name == "net.get" || name == "net.request" {
+            let now = Instant::now();
+            self.bridge_requests
+                .retain(|t| now.duration_since(*t) < Duration::from_secs(1));
+            if self.bridge_requests.len() >= 10 {
+                return Err(Error::new(
+                    "CB302",
+                    span,
+                    "Limite de requisições atingido.",
+                    "Request rate limit reached.",
+                ));
+            }
+            self.bridge_requests.push(now);
+            let mut headers = BTreeMap::new();
+            let (method, url, body, timeout) = if name == "net.get" {
+                ("GET", text(0)?, "", 10000)
+            } else {
+                let Value::Map(values) = &a[3] else {
+                    return Err(type_error(span));
+                };
+                for (key, value) in values.borrow().iter() {
+                    let value = match value {
+                        Text(s) => s.clone(),
+                        Secret(s) => s.as_ref().clone(),
+                        _ => return Err(type_error(span)),
+                    };
+                    headers.insert(key.clone(), value);
+                }
+                let Int(timeout) = a[4] else {
+                    return Err(type_error(span));
+                };
+                (text(0)?, text(1)?, text(2)?, timeout)
+            };
+            let response = crate::net::request(method, url, body, &headers, timeout, span)?;
+            return Ok(Value::map(BTreeMap::from([
+                ("status".into(), Int(response.status)),
+                ("body".into(), Text(response.body)),
+            ])));
+        }
         let list = |i: usize| {
             if let List(v) = &a[i] {
                 Ok(v.clone())
@@ -489,6 +628,9 @@ impl Runtime {
                 self.secrets.push(value.clone());
                 Secret(Rc::new(value))
             }
+            "json.parse" => crate::json::parse(text(0)?, span)?,
+            "json.stringify" => Text(self.redact(&crate::json::stringify(&a[0], span)?)),
+            "json.valid" => Bool(crate::json::parse(text(0)?, span).is_ok()),
             "text.upper" => Text(text(0)?.to_uppercase()),
             "text.lower" => Text(text(0)?.to_lowercase()),
             "text.trim" => Text(text(0)?.trim().into()),
@@ -703,7 +845,11 @@ impl Runtime {
                     }
                 }
             }
-            "minecraft_bridge.send" | "discord.start" | "discord.reply" => {
+            "minecraft_bridge.send"
+            | "discord.start"
+            | "discord.reply"
+            | "discord.connect"
+            | "discord.send" => {
                 return crate::integrations::dispatch(self, name, a, span);
             }
             _ => {

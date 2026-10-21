@@ -15,10 +15,10 @@ impl Default for Span {
 pub struct Error {
     pub code: &'static str,
     pub span: Span,
-    pub pt: String,
-    pub en: String,
-    pub hint_pt: String,
-    pub hint_en: String,
+    pub pt: Box<str>,
+    pub en: Box<str>,
+    pub hint_pt: Box<str>,
+    pub hint_en: Box<str>,
 }
 pub type Result<T> = std::result::Result<T, Error>;
 impl Error {
@@ -31,15 +31,15 @@ impl Error {
         Self {
             code,
             span,
-            pt: pt.into(),
-            en: en.into(),
+            pt: pt.into().into_boxed_str(),
+            en: en.into().into_boxed_str(),
             hint_pt: "Revise a instrução e seus argumentos.".into(),
             hint_en: "Check the statement and its arguments.".into(),
         }
     }
     pub fn hint(mut self, pt: impl Into<String>, en: impl Into<String>) -> Self {
-        self.hint_pt = pt.into();
-        self.hint_en = en.into();
+        self.hint_pt = pt.into().into_boxed_str();
+        self.hint_en = en.into().into_boxed_str();
         self
     }
     pub fn render(&self, file: &str, english: bool) -> String {
@@ -88,4 +88,32 @@ pub fn incompatible(span: Span) -> Error {
         "Use o subconjunto documentado; mantenha APIs externas no computador com minecraft_bridge.",
         "Use the documented subset; keep external APIs on the computer with minecraft_bridge.",
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn localized_diagnostic_preserves_location_code_and_hint() {
+        let error = Error::new(
+            "CB103",
+            Span {
+                line: 4,
+                column: 12,
+            },
+            "Tipos incompatíveis.",
+            "Incompatible types.",
+        )
+        .hint("Use um número.", "Use a number.");
+        assert_eq!(
+            error.render("programa.cb", false),
+            "programa.cb:4:12: CB103: Tipos incompatíveis.\nSugestão: Use um número."
+        );
+        assert_eq!(
+            error.clone().render("program.cb", true),
+            "program.cb:4:12: CB103: Incompatible types.\nSuggestion: Use a number."
+        );
+        assert_eq!(error.to_string(), "CB103: Incompatible types.");
+    }
 }

@@ -126,24 +126,22 @@ impl Backend {
             }
             self.validate_statement(s, true)?;
             expressions(s, &mut |e| {
-                if let ExprKind::Call(name, _) = &e.kind {
-                    if let Some(spec) = catalog::spec(name) {
-                        if spec.environment == "external"
-                            || ![
-                                "print",
-                                "text.print",
-                                "io.print",
-                                "minecraft.message",
-                                "minecraft.give_item",
-                                "minecraft.teleport",
-                                "minecraft.weather",
-                                "minecraft.time",
-                            ]
-                            .contains(&name.as_str())
-                        {
-                            return Err(incompatible(e.span));
-                        }
-                    }
+                if let ExprKind::Call(name, _) = &e.kind
+                    && let Some(spec) = catalog::spec(name)
+                    && (spec.environment == "external"
+                        || ![
+                            "print",
+                            "text.print",
+                            "io.print",
+                            "minecraft.message",
+                            "minecraft.give_item",
+                            "minecraft.teleport",
+                            "minecraft.weather",
+                            "minecraft.time",
+                        ]
+                        .contains(&name.as_str()))
+                {
+                    return Err(incompatible(e.span));
                 }
                 Ok(())
             })?;
@@ -385,14 +383,13 @@ impl Backend {
         }
     }
     fn selector(&self, e: &Expr) -> Result<String> {
-        if let Value::Text(s) = self.literal(e)? {
-            if ["@a", "@p", "@r", "@s", "@e"].contains(&s.as_str())
+        if let Value::Text(s) = self.literal(e)?
+            && (["@a", "@p", "@r", "@s", "@e"].contains(&s.as_str())
                 || !s.is_empty()
                     && s.len() <= 16
-                    && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
-            {
-                return Ok(s);
-            }
+                    && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_'))
+        {
+            return Ok(s);
         }
         Err(incompatible(e.span))
     }

@@ -30,6 +30,13 @@ impl Args {
         };
         let mut args = args.into_iter();
         while let Some(arg) = args.next() {
+            if arg == "--help" || arg == "--version" {
+                let key = arg[2..].to_string();
+                if result.options.insert(key, vec!["true".into()]).is_some() {
+                    return Err(argument_error());
+                }
+                continue;
+            }
             if let Some(flag) = arg.strip_prefix("--") {
                 let (key, value) = if let Some((k, v)) = flag.split_once('=') {
                     (k.to_string(), v.to_string())
@@ -96,10 +103,9 @@ impl Args {
             .iter()
             .map(|p| catalog::canonical(p))
             .collect();
-        if permissions
-            .iter()
-            .any(|p| !["file", "process", "net", "minecraft_bridge"].contains(&p.as_str()))
-        {
+        if permissions.iter().any(|p| {
+            !["file", "process", "net", "minecraft_bridge", "window"].contains(&p.as_str())
+        }) {
             return Err(argument_error());
         }
         Ok(permissions)
@@ -134,19 +140,23 @@ fn read_source(path: &Path) -> Result<String> {
         .to_string())
 }
 pub fn main_entry(raw: Vec<String>) -> i32 {
-    if raw == ["--version"] {
-        println!("Command Blocks 0.1.0");
-        return 0;
-    }
-    if raw == ["--help"] {
-        help(None, false);
-        return 0;
-    }
     let english =
         raw.iter().any(|v| v == "--lang=en") || raw.windows(2).any(|w| w == ["--lang", "en"]);
     let mut file = "<cli>".to_string();
     let result = (|| {
         let args = Args::parse(raw)?;
+        if args.options.contains_key("version") {
+            args.validate(0, 0, &["version"])?;
+            println!("Command Blocks {}", env!("CARGO_PKG_VERSION"));
+            return Ok(0);
+        }
+        if args.options.contains_key("help") {
+            args.validate(0, 1, &["help"])?;
+            let topic = args.positional.first().map(String::as_str);
+            validate_help_topic(topic)?;
+            help(topic, english);
+            return Ok(0);
+        }
         if let Some(source) = embedded_source()? {
             args.validate(0, 0, &["allow", "max-steps"])?;
             file = "<bundle>".into();
@@ -168,6 +178,7 @@ pub fn main_entry(raw: Vec<String>) -> i32 {
         match command {
             "help" => {
                 args.validate(0, 2, &[])?;
+                validate_help_topic(args.positional.get(1).map(String::as_str))?;
                 help(args.positional.get(1).map(|s| s.as_str()), english);
             }
             "run" | "check" | "convert" | "build" | "format" => {
@@ -402,9 +413,9 @@ pub fn main_entry(raw: Vec<String>) -> i32 {
                             "{}",
                             if name == "discord" {
                                 if english {
-                                    "Discord interface enabled; transport is NOT implemented."
+                                    "Discord enabled: experimental Windows REST client; gateway/events are not implemented."
                                 } else {
-                                    "Interface Discord habilitada; transporte NÃO implementado."
+                                    "Discord habilitado: cliente REST Windows experimental; gateway/eventos não implementados."
                                 }
                             } else if english {
                                 "Local bridge client enabled; authentication still required."
@@ -428,6 +439,18 @@ pub fn main_entry(raw: Vec<String>) -> i32 {
     }
 }
 fn help(topic: Option<&str>, english: bool) {
+    if let Some(topic) = topic
+        && let Some((usage, pt, en, example)) = command_help(topic)
+    {
+        println!(
+            "Command Blocks {}\n\n{}: {usage}\n\n{}\n\n{}:\n  {example}\n\n--lang pt-br|en",
+            env!("CARGO_PKG_VERSION"),
+            if english { "Usage" } else { "Uso" },
+            if english { en } else { pt },
+            if english { "Example" } else { "Exemplo" }
+        );
+        return;
+    }
     match topic.map(catalog::canonical).as_deref() {
         Some("text") => println!(
             "text/texto: print/imprimir, upper/maiusculas, lower/minusculas, trim/aparar, join/juntar, split/separar, replace/substituir, contains/contem, starts_with/comeca_com, ends_with/termina_com, length/tamanho, string/converter, number/numero, format/formatar"
@@ -438,9 +461,9 @@ fn help(topic: Option<&str>, english: bool) {
         Some("discord") => println!(
             "{}",
             if english {
-                "Optional scaffold only. discord.start(secret(\"DISCORD_TOKEN\")) is type checked, but execution returns CB202: no transport exists in 0.1. No network connection is made. See docs/en/integrations.md."
+                "Experimental Windows REST client: discord.connect(secret(\"DISCORD_TOKEN\")), discord.send(channel, text). Requires cb install discord, import discord, permission net and --allow net. Gateway/events are not implemented: discord.start returns CB202. No live Discord validation yet."
             } else {
-                "Apenas estrutura opcional. discord.iniciar(segredo(\"DISCORD_TOKEN\")) tem tipos verificados, mas execução retorna CB202: transporte não existe em 0.1. Nenhuma conexão é feita. Consulte docs/pt-br/integracoes.md."
+                "Cliente REST Windows experimental: discord.conectar(segredo(\"DISCORD_TOKEN\")), discord.enviar(canal, texto). Exige cb install discord, importar discord, permissao rede e --allow net. Gateway/eventos não implementados: discord.iniciar retorna CB202. Ainda sem validação ao vivo no Discord."
             }
         ),
         Some("minecraft_bridge") => println!(
@@ -459,10 +482,106 @@ fn help(topic: Option<&str>, english: bool) {
                 "Consulte docs/pt-br/README.md para o catálogo implementado."
             }
         ),
-        None => println!(
-            "Command Blocks 0.1\ncb run FILE [--allow file] [--max-steps 100000] [--lang en]\ncb check FILE [--target minecraft]\ncb convert FILE --target minecraft [--mc-version 1.21.1] [--namespace NAME] [--output DIR]\ncb build FILE [--output APP]\ncb test [PATH]\ncb format FILE\ncb create {{app,minecraft-datapack,discord-bot}} DIR\ncb install LIB\ncb list\ncb info LIB\ncb help [LIB]\ncb --version"
-        ),
+        None => {
+            println!("Command Blocks {}\n", env!("CARGO_PKG_VERSION"));
+            println!(
+                "{}: cb COMMAND [OPTIONS]\n",
+                if english { "Usage" } else { "Uso" }
+            );
+            for name in [
+                "run", "check", "convert", "build", "format", "test", "create", "install", "list",
+                "info", "help",
+            ] {
+                let (_, pt, en, _) = command_help(name).unwrap();
+                println!("  {name:<9} {}", if english { en } else { pt });
+            }
+            println!("\n  --help\n  --version\n  --lang pt-br|en\n");
+            println!(
+                "{}:\n  cb run examples/ola.cb\n  cb help convert --lang en",
+                if english { "Examples" } else { "Exemplos" }
+            );
+        }
     }
+}
+fn command_help(name: &str) -> Option<(&'static str, &'static str, &'static str, &'static str)> {
+    Some(match name {
+        "run" => (
+            "cb run FILE [--allow CAPABILITY] [--max-steps N]",
+            "Executa um programa local. Permissões exigem declaração no fonte e autorização na CLI.",
+            "Runs a local program. Permissions require both a source declaration and a CLI grant.",
+            "cb run examples/ola.cb --lang pt-br",
+        ),
+        "check" => (
+            "cb check FILE [--target external|minecraft] [--mc-version VERSION] [--namespace NAME]",
+            "Verifica o programa sem executá-lo. Não comprova conectividade de serviços.",
+            "Checks the program without executing it. Does not verify service connectivity.",
+            "cb check examples/minecraft.cb --target minecraft",
+        ),
+        "convert" => (
+            "cb convert FILE --target minecraft [--output DIR] [--mc-version VERSION] [--namespace NAME]",
+            "Gera um novo datapack Java 1.21/1.21.1. Recusa recursos incompatíveis e destinos existentes.",
+            "Generates a new Java 1.21/1.21.1 datapack. Rejects incompatible features and existing destinations.",
+            "cb convert examples/pontos.cb --target minecraft --output meu_datapack",
+        ),
+        "build" => (
+            "cb build FILE [--output APP]",
+            "Empacota o interpretador nativo e o fonte para o mesmo sistema e arquitetura.",
+            "Packages the native interpreter and source for the same operating system and architecture.",
+            "cb build examples/hello.cb --output hello.exe",
+        ),
+        "format" => (
+            "cb format FILE",
+            "Formata a indentação. Cria backup .bak e recusa substituir um backup existente.",
+            "Formats indentation. Creates a .bak backup and refuses to overwrite an existing backup.",
+            "cb format examples/ola.cb",
+        ),
+        "test" => (
+            "cb test [PATH]",
+            "Executa os blocos de teste encontrados, sem conceder permissões externas.",
+            "Runs discovered test blocks without granting external permissions.",
+            "cb test examples/tests.cb",
+        ),
+        "create" => (
+            "cb create app|minecraft-datapack|discord-bot DIR",
+            "Cria um projeto novo. O template Discord ainda usa uma interface incompleta.",
+            "Creates a new project. The Discord template still uses an incomplete interface.",
+            "cb create app meu_app",
+        ),
+        "install" => (
+            "cb install discord|minecraft_bridge",
+            "Habilita uma biblioteca opcional neste projeto; não baixa pacotes.",
+            "Enables an optional library in this project; does not download packages.",
+            "cb install discord",
+        ),
+        "list" => (
+            "cb list",
+            "Lista as bibliotecas opcionais conhecidas.",
+            "Lists known optional libraries.",
+            "cb list",
+        ),
+        "info" => (
+            "cb info LIBRARY",
+            "Mostra informações sobre uma biblioteca opcional.",
+            "Shows information about an optional library.",
+            "cb info minecraft_bridge",
+        ),
+        "help" => (
+            "cb help [COMMAND|LIBRARY]",
+            "Mostra ajuda de comandos e bibliotecas.",
+            "Shows command and library help.",
+            "cb help run --lang en",
+        ),
+        _ => return None,
+    })
+}
+fn validate_help_topic(topic: Option<&str>) -> Result<()> {
+    if let Some(topic) = topic
+        && command_help(topic).is_none()
+        && !catalog::MODULES.contains(&catalog::canonical(topic).as_str())
+    {
+        return Err(argument_error());
+    }
+    Ok(())
 }
 fn collect_tests(path: &Path, out: &mut Vec<PathBuf>) -> Result<()> {
     let meta = fs::symlink_metadata(path).map_err(|_| io_error())?;

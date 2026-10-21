@@ -1,0 +1,11 @@
+{
+  "compiler":"0.1.0",
+  "target":"minecraft-java",
+  "version":"1.21.1",
+  "namespace":"command_blocks",
+  "objective":"cb302f60846c41",
+  "functions":6,
+  "scores":{"pontos":"#v0"},
+  "validation":"compiler-only; no live game verification",
+  "reload":"globals reset; existing objective is retained"
+}

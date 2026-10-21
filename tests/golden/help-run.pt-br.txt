@@ -1,0 +1,10 @@
+Command Blocks 0.1.0
+
+Uso: cb run FILE [--allow CAPABILITY] [--max-steps N]
+
+Executa um programa local. Permissões exigem declaração no fonte e autorização na CLI.
+
+Exemplo:
+  cb run examples/ola.cb --lang pt-br
+
+--lang pt-br|en

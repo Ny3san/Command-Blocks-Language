@@ -1,5 +1,15 @@
 # Command Blocks 0.1
 
+[CLI help and exit codes](cli.md)
+
+[Diagnostics and Rust API migration](diagnostics.md)
+
+[Native windows (under validation)](windows.md)
+
+[JSON library](json.md)
+
+[Network and APIs (under validation)](network.md)
+
 [Project overview](../../README.md) · [Minecraft](minecraft.md) · [Integrations](integrations.md) · [Architecture](architecture.md) · [Proposed expansion](roadmap.md)
 
 ## Start with one line

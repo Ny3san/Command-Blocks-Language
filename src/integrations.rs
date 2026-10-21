@@ -27,6 +27,30 @@ pub fn dispatch(runtime: &mut Runtime, name: &str, args: &[Value], span: Span) -
         ));
     }
     if module == "discord" {
+        if name == "discord.connect" {
+            let Value::Secret(token) = &args[0] else {
+                return Err(crate::diagnostic::type_error(span));
+            };
+            let mut client = crate::discord::Client::new(token.clone(), span)?;
+            let profile = client.authenticate(span)?;
+            runtime.discord = Some(client);
+            return Ok(profile);
+        }
+        if name == "discord.send" {
+            let (Value::Text(channel), Value::Text(content)) = (&args[0], &args[1]) else {
+                return Err(crate::diagnostic::type_error(span));
+            };
+            let content = runtime.redact(content);
+            let client = runtime.discord.as_mut().ok_or_else(|| {
+                Error::new(
+                    "CB301",
+                    span,
+                    "Conecte o bot primeiro com discord.conectar().",
+                    "Connect the bot first with discord.connect().",
+                )
+            })?;
+            return client.send(channel, &content, span);
+        }
         return Err(Error::new(
             "CB202",
             span,

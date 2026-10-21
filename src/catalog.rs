@@ -21,10 +21,20 @@ pub fn module(name: &str) -> &str {
         "tempo" => "time",
         "data" => "date",
         "ponte_minecraft" => "minecraft_bridge",
+        "janela" => "window",
         _ => name,
     }
 }
 pub fn canonical(name: &str) -> String {
+    if name == "json.ler" {
+        return "json.parse".into();
+    }
+    if name == "json.escrever" {
+        return "json.stringify".into();
+    }
+    if name == "json.validar" {
+        return "json.valid".into();
+    }
     if let Some((m, f)) = name.split_once('.') {
         let m = module(m);
         let f = match f {
@@ -87,6 +97,15 @@ pub fn canonical(name: &str) -> String {
             "teleportar" => "teleport",
             "clima" => "weather",
             "horario" => "time",
+            "requisicao" => "request",
+            "conectar" => "connect",
+            "abrir" => "open",
+            "rotulo" => "label",
+            "botao" => "button",
+            "entrada" => "input",
+            "fechar" => "close",
+            "definir_texto" => "set_text",
+            "texto" => "text",
             _ => f,
         };
         format!("{m}.{f}")
@@ -114,6 +133,11 @@ pub fn spec(name: &str) -> Option<Spec> {
         "print" | "text.print" | "io.print" => (vec![Any], Null),
         "assert" => (vec![Bool], Null),
         "secret" => (vec![Text], Secret),
+        "json.parse" => (vec![Text], Any),
+        "json.stringify" => (vec![Any], Text),
+        "json.valid" => (vec![Text], Bool),
+        "net.get" => (vec![Text], Map),
+        "net.request" => (vec![Text, Text, Text, Map, Int], Map),
         "text.upper" | "text.lower" | "text.trim" => (vec![Text], Text),
         "text.join" => (vec![List, Text], Text),
         "text.split" => (vec![Text, Text], List),
@@ -151,7 +175,15 @@ pub fn spec(name: &str) -> Option<Spec> {
         "file.mkdir" => (vec![Text], Null),
         "file.list" => (vec![Text], List),
         "process.run" => (vec![Text, List], Map),
+        "window.open" => (vec![Text, Int, Int], Null),
+        "window.label" | "window.input" => (vec![Text, Int, Int, Int, Int], Int),
+        "window.button" => (vec![Text, Text, Int, Int, Int, Int], Int),
+        "window.text" => (vec![Int], Text),
+        "window.set_text" => (vec![Int, Text], Null),
+        "window.run" | "window.close" => (vec![], Null),
         "discord.start" => (vec![Secret], Null),
+        "discord.connect" => (vec![Secret], Map),
+        "discord.send" => (vec![Text, Text], Map),
         "discord.reply" => (vec![Text], Null),
         "minecraft_bridge.send" => (vec![Text], Null),
         "minecraft.message" => (vec![Text, Text], Null),
@@ -166,7 +198,7 @@ pub fn spec(name: &str) -> Option<Spec> {
         "minecraft"
     } else if matches!(
         m,
-        "file" | "process" | "discord" | "minecraft_bridge" | "time"
+        "file" | "process" | "discord" | "minecraft_bridge" | "time" | "window" | "net"
     ) || name == "secret"
         || name.starts_with("io.read_")
     {
@@ -176,6 +208,8 @@ pub fn spec(name: &str) -> Option<Spec> {
     };
     let permission = match m {
         "file" => Some("file"),
+        "window" => Some("window"),
+        "net" => Some("net"),
         "process" => Some("process"),
         "discord" => Some("net"),
         "minecraft_bridge" => Some("minecraft_bridge"),
@@ -189,6 +223,9 @@ pub fn spec(name: &str) -> Option<Spec> {
     })
 }
 pub const MODULES: &[&str] = &[
+    "net",
+    "json",
+    "window",
     "text",
     "math",
     "list",

@@ -4,3 +4,36 @@
 .env
 *.secret
 .cb-libraries
+@"
+target/
+*.rar
+*.vsix
+*.exe
+*.bak
+.vscode/
+# Arquivos locais e gerados - Command Blocks
+target/
+*.rar
+*.vsix
+*.exe
+*.bak
+.vscode/
+node_modules/
+
+# Arquivos locais e gerados - Command Blocks
+target/
+*.rar
+*.vsix
+*.exe
+*.bak
+.vscode/
+node_modules/
+
+# Arquivos locais e gerados - Command Blocks
+target/
+*.rar
+*.vsix
+*.exe
+*.bak
+.vscode/
+node_modules/
