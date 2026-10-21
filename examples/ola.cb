@@ -1,0 +1,14 @@
+variavel nome = "Steve"
+constante limite = 10
+
+funcao cumprimentar(pessoa) {
+    imprimir("Olá, " + pessoa)
+}
+
+evento inicio {
+    se limite >= 10 {
+        cumprimentar(nome)
+    } senao {
+        imprimir("O limite ainda não foi atingido")
+    }
+}

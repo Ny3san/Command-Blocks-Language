@@ -1,0 +1,7 @@
+evento inicio {
+    minecraft.mensagem("@a", "Bem-vindo ao Command Blocks!")
+    minecraft.dar_item("@a", "minecraft:diamond", 1)
+    minecraft.teleportar("@a", 0, 80, 0)
+    minecraft.clima("clear")
+    minecraft.horario(1000)
+}

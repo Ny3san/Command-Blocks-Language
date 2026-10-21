@@ -1,0 +1,12 @@
+variavel pontos = 0
+
+evento marcar {
+    pontos = pontos + 1
+}
+
+evento inicio {
+    repetir 3 vezes {
+        evento.emitir("marcar")
+    }
+    imprimir(pontos)
+}

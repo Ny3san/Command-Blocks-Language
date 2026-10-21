@@ -1,0 +1,37 @@
+(* Canonical English grammar. PT-BR keywords are aliases. *)
+program       = { separator }, { statement, { separator } } ;
+statement     = declaration | assignment | function | event | test
+              | if | while | repeat | for | return | import | permission | expression ;
+declaration   = ("variable" | "constant"), identifier, "=", expression ;
+assignment    = (identifier | index), "=", expression ;
+function      = "function", identifier, "(", [identifier, {",", identifier}], ")", block ;
+event         = "event", identifier, block ;
+test          = "test", string, block ;
+if            = "if", expression, block, ["else", block] ;
+while         = "while", expression, block ;
+repeat        = "repeat", expression, ["times"], block ;
+for           = "for", ["each"], identifier, "in", expression, block ;
+return        = "return", expression ;
+import        = "import", identifier ;
+permission    = "permission", identifier ;
+block         = "{", {separator}, {statement, {separator}}, "}" ;
+expression    = logical_or ;
+logical_or    = logical_and, {"or", logical_and} ;
+logical_and   = equality, {"and", equality} ;
+equality      = comparison, {("==" | "!="), comparison} ;
+comparison    = sum, {("<" | ">" | "<=" | ">="), sum} ;
+sum           = product, {("+" | "-"), product} ;
+product       = unary, {("*" | "/" | "%"), unary} ;
+unary         = ["+" | "-" | "not"], primary ;
+primary       = number | string | "true" | "false" | "null" | identifier
+              | call | index | list | map | "(", expression, ")" ;
+call          = qualified_name, "(", [expression, {",", expression}], ")" ;
+qualified_name = identifier, {".", identifier} ;
+index         = primary, "[", expression, "]" ;
+list          = "[", [expression, {",", expression}], "]" ;
+map           = "{", [string, ":", expression, {",", string, ":", expression}], "}" ;
+separator     = newline | ";" ;
+(* Separators are required between adjacent statements except immediately before }. *)
+(* Lists/maps/call arguments allow newlines. No trailing commas in 0.1. *)
+(* Strings use ' or ", with escapes \n \r \t \\ \' \". No interpolation. *)
+(* Comments: # or // until end of line. Identifiers: Unicode letters/digits/_; no leading digit. *)

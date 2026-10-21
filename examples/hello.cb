@@ -1,0 +1,14 @@
+variable name = "Steve"
+constant limit = 10
+
+function greet(person) {
+    print("Hello, " + person)
+}
+
+event start {
+    if limit >= 10 {
+        greet(name)
+    } else {
+        print("The limit has not been reached yet")
+    }
+}

@@ -1,0 +1,16 @@
+variavel pontos = 0
+
+funcao ganhar_ponto() {
+    pontos = pontos + 1
+    imprimir("Pontuação: " + pontos)
+}
+
+evento inicio {
+    imprimir("Sistema iniciado")
+    repetir 5 vezes {
+        ganhar_ponto()
+    }
+    se pontos >= 5 {
+        imprimir("Você venceu!")
+    }
+}

@@ -1,0 +1,12 @@
+variavel jogadores = lista.criar()
+lista.adicionar(jogadores, "Steve")
+lista.adicionar(jogadores, "Alex")
+
+para cada jogador em lista.ordenar(jogadores) {
+    imprimir(texto.maiusculas(jogador))
+}
+
+variavel placar = {"Steve": 10, "Alex": 20}
+mapa.definir(placar, "Alex", 25)
+imprimir(placar["Alex"])
+imprimir(texto.formatar("Jogadores: {quantidade}", {"quantidade": lista.tamanho(jogadores)}))
