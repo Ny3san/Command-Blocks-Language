@@ -37,3 +37,12 @@ target/
 *.bak
 .vscode/
 node_modules/
+
+# Gerados/local - Command Blocks
+target/
+*.rar
+*.vsix
+*.exe
+*.bak
+.vscode/
+node_modules/

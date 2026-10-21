@@ -1,0 +1,79 @@
+{
+  "name": "command-blocks-language",
+  "displayName": "Command Blocks Language",
+  "description": "Syntax highlighting, snippets and completion for Command Blocks (.cb).",
+  "version": "0.1.0",
+  "publisher": "command-blocks",
+  "license": "MIT",
+  "engines": {
+    "vscode": ">=1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "command-blocks",
+        "aliases": [
+          "Command Blocks",
+          "cb"
+        ],
+        "extensions": [
+          ".cb"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "command-blocks",
+        "scopeName": "source.cb",
+        "path": "./syntaxes/command-blocks.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "command-blocks",
+        "path": "./snippets/command-blocks.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "command-blocks.check",
+        "title": "Command Blocks: Verificar arquivo"
+      },
+      {
+        "command": "command-blocks.run",
+        "title": "Command Blocks: Executar arquivo"
+      }
+    ],
+    "configuration": {
+      "title": "Command Blocks",
+      "properties": {
+        "commandBlocks.executable": {
+          "type": "string",
+          "default": "cb",
+          "description": "Caminho para o executável cb."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[command-blocks]": {
+        "editor.quickSuggestions": {
+          "other": true,
+          "comments": false,
+          "strings": false
+        },
+        "editor.suggestOnTriggerCharacters": true,
+        "editor.inlineSuggest.enabled": true,
+        "editor.wordBasedSuggestions": "off"
+      }
+    }
+  },
+  "activationEvents": [
+    "onLanguage:command-blocks"
+  ]
+}
