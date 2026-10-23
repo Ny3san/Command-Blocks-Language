@@ -775,9 +775,7 @@ impl Runtime {
             "map.contains" => Bool(map(0)?.borrow().contains_key(text(1)?)),
             "map.keys" => Value::list(map(0)?.borrow().keys().map(|s| Text(s.clone())).collect()),
             "event.emit" => {
-                // Canonicalise so that emitir("inicio") triggers evento inicio.
-                let canonical = catalog::event(text(0)?).to_string();
-                self.emit(&canonical)?;
+                self.emit(text(0)?)?;
                 Null
             }
             "io.environment" => Text("external".into()),

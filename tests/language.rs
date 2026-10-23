@@ -410,3 +410,41 @@ fn minecraft_scoreboard_behavior_matches_interpreter() {
         assert_eq!(machine.messages, output.len());
     }
 }
+
+// Testes de regressão das correções da branch refactor/melhoria-linguagem.
+
+#[test]
+fn regression_invalid_escape_span_points_to_backslash() {
+    // "print(\"aaaa\\xb\")": a barra invertida está na coluna 12.
+    // Antes da correção o erro apontava para a aspa de abertura (coluna 7).
+    let err = compile("print(\"aaaa\\xb\")").unwrap_err();
+    assert_eq!(err.code, "CB001");
+    assert_eq!(err.span.line, 1);
+    assert_eq!(err.span.column, 12);
+}
+
+#[test]
+fn event_emit_resolves_aliases() {
+    // Guarda de comportamento (não era bug): "mensagem" canoniza para "message"
+    // dentro de Runtime::emit, então evento.emitir usa o alias sem correção extra.
+    let out = run(
+        "evento mensagem {\n    print(\"msg\")\n}\nevento inicio {\n    evento.emitir(\"mensagem\")\n}",
+    )
+    .unwrap();
+    assert_eq!(out, ["msg"]);
+}
+
+#[test]
+fn regression_map_remove_deletes_and_rejects_missing_key() {
+    let out = run(
+        "variable m = map.create()\nmap.set(m, \"x\", 1)\nmap.remove(m, \"x\")\nprint(map.length(m))",
+    )
+    .unwrap();
+    assert_eq!(out, ["0"]);
+    assert_eq!(
+        run("variable m = map.create()\nmap.remove(m, \"ausente\")")
+            .unwrap_err()
+            .code,
+        "CB107"
+    );
+}

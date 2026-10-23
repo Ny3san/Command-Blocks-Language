@@ -53,13 +53,14 @@ Estas três mudanças estão no working tree e passam em `cargo test`.
   (`col + (i - start)`) e usa esse `Span` no erro `CB001`.
 - **Verificado:** `/tmp/t.cb:1:15: CB001: Escape inválido.`
 
-### 3.2 `evento.emitir` sem canonicalização (`src/runtime.rs`)
+### 3.2 `evento.emitir` — correção retirada
 
-- **Problema:** `evento.emitir("inicio")` não disparava `evento inicio`,
-  porque o nome era usado sem passar por `catalog::event()`.
-- **Correção:** `"event.emit"` chama `catalog::event(text(0)?)` antes de
-  `self.emit`.
-- **Verificado:** o evento `meu_evento` é disparado uma vez por emissão.
+- **Hipótese inicial:** `evento.emitir("inicio")` não dispararia `evento inicio`.
+- **Verificação:** `Runtime::emit` já compara com `catalog::event(name)`, então o
+  alias já era resolvido. O repro original mostrava o evento executando de novo
+  porque o próprio evento se emitia, não por falha de nome.
+- **Decisão:** a alteração em `runtime.rs` foi revertida. Não houve bug.
+- Foi adicionado `event_emit_resolves_aliases` como guarda de comportamento.
 
 ### 3.3 `mapa.remover` implementado (`src/catalog.rs`, `src/runtime.rs`)
 
@@ -69,11 +70,8 @@ Estas três mudanças estão no working tree e passam em `cargo test`.
   implementação no runtime. Chave inexistente retorna `CB107`.
 - **Verificado:** `mapa.remover(m, "x")` seguido de `mapa.tamanho(m)` retorna `0`.
 
-**Como commitar:**
-```bash
-git add src/lexer.rs src/runtime.rs src/catalog.rs
-git commit -m "fix: escape span, emitir canonicalizado e mapa.remover"
-```
+Commit: `25eeb74` (contém a correção do escape e de `mapa.remover`; a alteração
+de `runtime.rs` do item 3.2 foi retirada depois).
 
 ---
 
@@ -110,9 +108,9 @@ git commit -m "fix: escape span, emitir canonicalizado e mapa.remover"
 
 Ainda faltam:
 
-- Testes de regressão para as três correções da seção 3. Hoje elas estão
-  verificadas manualmente, sem teste automatizado.
-- `CHANGELOG.md`, `SECURITY.md`, `.editorconfig` e templates de issue/PR.
+- Templates de issue e PR (ainda não criados).
+- Teste de regressão para `mapa.remover` e escape: já existem em `tests/language.rs`
+  (`regression_*`). Confirmei que falham no código anterior às correções.
 - Revisão do CI para incluir fmt e clippy, quando disponíveis.
 - Conferência de "20 testes" no README contra a contagem real (hoje são 30
   entre unitários e integração).
