@@ -477,9 +477,9 @@ fn help(topic: Option<&str>, english: bool) {
         Some(_) => println!(
             "{}",
             if english {
-                "See docs/en/README.md for the implemented library catalog."
+                "See docs/bibliotecas.md (in Portuguese) for the implemented library catalog."
             } else {
-                "Consulte docs/pt-br/README.md para o catálogo implementado."
+                "Consulte docs/bibliotecas.md para o catálogo implementado."
             }
         ),
         None => {

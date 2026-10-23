@@ -1,29 +1,59 @@
-# Contribuir / Contributing
+# Como contribuir
 
-O projeto é uma base em desenvolvimento, não uma release estável. Não publique credenciais, `.env`, `.cb-libraries`, diretórios `target` ou programas empacotados contendo dados privados.
+Obrigado pelo interesse! Este projeto está em desenvolvimento inicial.
 
-The project is a development foundation, not a stable release. Do not commit credentials, `.env`, `.cb-libraries`, build caches or packaged programs containing private data.
+## Regras básicas
 
-## Antes de publicar no GitHub / Before publishing
+- Escreva **código e comentários em inglês**.
+- Escreva **documentação em português**. Os exemplos de código dentro da documentação usam a forma em inglês.
+- Mensagens para o usuário são bilíngues (português e inglês), como já funciona.
+- **Não envie credenciais**, arquivos `.env`, `.cb-libraries`, pastas `target/` nem programas empacotados com dados privados.
+- Não marque como pronto algo que não foi testado. Se uma parte for experimental, diga isso na documentação.
 
-- Executar todos os testes Rust e da CLI. / Run Rust and CLI tests.
-- Validar exemplos e links da documentação. / Validate examples and documentation links.
-- Verificar executáveis independentes da toolchain. / Verify standalone binaries.
-- Validar datapack em um mundo de teste e registrar versão/resultado. / Validate datapacks in a test world and record the version/result.
-- Manter Discord, GUI e automação de cliente identificados como não implementados enquanto for o caso. / Keep unsupported features labelled accurately.
-- Preservar o arquivo LICENSE e créditos dos contribuidores; a licença do projeto é MIT. / Preserve LICENSE and contributor credits; the project uses the MIT license.
+## Preparar o ambiente
 
-## Verificações / Checks
+Você precisa do [Rust](https://rustup.rs/) estável.
+
+No Windows com a toolchain MSVC, instale o **Visual Studio Build Tools** com a carga de trabalho C++ e o Windows SDK. Passar em `cargo check` não prova que `cargo build` funciona.
+
+## Verificações
+
+Antes de enviar uma alteração, rode:
 
 ```text
-cargo check --offline --all-targets
-cargo test --offline
 cargo fmt --all -- --check
-cargo clippy --offline --all-targets -- -D warnings
+cargo clippy --offline --locked --all-targets -- -D warnings
+cargo test --offline --locked
 ```
 
-Windows MSVC needs the C++ build tools and Windows SDK. See the manual for the alternative GNU/LLVM toolchain. Passing `cargo check` alone is not passing executable tests.
+As mesmas verificações rodam automaticamente no GitHub Actions para Linux e Windows.
 
-For a feature, include an executable example, environment compatibility, PT-BR/EN diagnostics and tests. For Minecraft, test behavior as well as file generation. Changes should preserve existing aliases and avoid adding unnecessary keywords.
+## Ao adicionar um recurso
 
-This document does not publish the repository, create a remote or claim that release checks have passed.
+- Inclua um exemplo `.cb` que funcione.
+- Inclua testes de sucesso, de erro e, quando houver, de permissão.
+- Atualize a documentação em português.
+- Adicione uma linha em `CHANGELOG.md`.
+
+## Ao corrigir um bug
+
+Escreva um teste que falhe antes da correção e passe depois. Isso evita que o bug volte.
+
+## Publicar no GitHub
+
+Os commits são locais até você enviar. Depois de revisar:
+
+```text
+git remote add origin https://github.com/SEU_USUARIO/command-blocks.git
+git push -u origin nome-da-branch
+```
+
+Abra um pull request para `main`. Confira `git remote -v` antes de alterar um remoto que já existe.
+
+## Versões
+
+Não crie uma tag de versão estável até que todas as verificações passem e a documentação esteja de acordo com o código. Descreva esta versão como desenvolvimento inicial.
+
+## Licença
+
+O projeto usa a licença [MIT](LICENSE). Preserve o arquivo `LICENSE` e os créditos dos contribuidores.

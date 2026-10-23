@@ -58,8 +58,8 @@ pub fn dispatch(runtime: &mut Runtime, name: &str, args: &[Value], span: Span) -
             "Discord provides only the initial interface; transport is not implemented yet.",
         )
         .hint(
-            "Consulte docs/pt-br/integracoes.md. Nenhuma conexão foi iniciada.",
-            "See docs/en/integrations.md. No connection was started.",
+            "Consulte docs/integracoes.md. Nenhuma conexão foi iniciada.",
+            "See docs/integracoes.md (in Portuguese). No connection was started.",
         ));
     }
     let command = match &args[0] {
