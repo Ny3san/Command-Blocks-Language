@@ -1,12 +1,12 @@
-variavel pontos = 0
+variable points = 0
 
-evento marcar {
-    pontos = pontos + 1
+event mark {
+    points = points + 1
 }
 
-evento inicio {
-    repetir 3 vezes {
-        evento.emitir("marcar")
+event start {
+    repeat 3 times {
+        event.emit("mark")
     }
-    imprimir(pontos)
+    print(points)
 }

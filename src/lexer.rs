@@ -86,6 +86,12 @@ pub fn lex(source: &str) -> Result<Vec<Token>> {
                     ));
                 }
                 if chars[i] == '\\' {
+                    // Record the column of the backslash for accurate diagnostics.
+                    let escape_col = col + (i - start);
+                    let escape_span = Span {
+                        line,
+                        column: escape_col,
+                    };
                     i += 1;
                     let escaped = match chars.get(i) {
                         Some('n') => '\n',
@@ -97,7 +103,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>> {
                         _ => {
                             return Err(Error::new(
                                 "CB001",
-                                span,
+                                escape_span,
                                 "Escape inválido.",
                                 "Invalid escape.",
                             ));

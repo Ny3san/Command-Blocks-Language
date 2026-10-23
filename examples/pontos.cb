@@ -1,16 +1,16 @@
-variavel pontos = 0
+variable points = 0
 
-funcao ganhar_ponto() {
-    pontos = pontos + 1
-    imprimir("Pontuação: " + pontos)
+function score_point() {
+    points = points + 1
+    print("Pontuação: " + points)
 }
 
-evento inicio {
-    imprimir("Sistema iniciado")
-    repetir 5 vezes {
-        ganhar_ponto()
+event start {
+    print("Sistema iniciado")
+    repeat 5 times {
+        score_point()
     }
-    se pontos >= 5 {
-        imprimir("Você venceu!")
+    if points >= 5 {
+        print("Você venceu!")
     }
 }

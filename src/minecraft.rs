@@ -124,7 +124,7 @@ impl Backend {
                 StmtKind::Event(..) | StmtKind::Permission(..) | StmtKind::Import(..) => {}
                 _ => executable = true,
             }
-            self.validate_statement(s, true)?;
+            Self::validate_statement(s, true)?;
             expressions(s, &mut |e| {
                 if let ExprKind::Call(name, _) = &e.kind
                     && let Some(spec) = catalog::spec(name)
@@ -158,7 +158,7 @@ impl Backend {
         }
         Ok(())
     }
-    fn validate_statement(&self, s: &Stmt, top: bool) -> Result<()> {
+    fn validate_statement(s: &Stmt, top: bool) -> Result<()> {
         match &s.kind {
             StmtKind::While(..) | StmtKind::For(..) | StmtKind::Return(..) | StmtKind::Test(..) => {
                 return Err(incompatible(s.span));
@@ -169,17 +169,17 @@ impl Backend {
                     return Err(incompatible(e.span));
                 }
                 for s in b {
-                    self.validate_statement(s, false)?;
+                    Self::validate_statement(s, false)?;
                 }
             }
             StmtKind::If(_, a, b) => {
                 for s in a.iter().chain(b) {
-                    self.validate_statement(s, false)?;
+                    Self::validate_statement(s, false)?;
                 }
             }
             StmtKind::Function(_, _, b) => {
                 for s in b {
-                    self.validate_statement(s, false)?;
+                    Self::validate_statement(s, false)?;
                 }
             }
             StmtKind::Event(name, b) => {
@@ -187,7 +187,7 @@ impl Backend {
                     return Err(incompatible(s.span));
                 }
                 for s in b {
-                    self.validate_statement(s, false)?;
+                    Self::validate_statement(s, false)?;
                 }
             }
             _ => {}

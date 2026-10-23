@@ -1,12 +1,12 @@
-variavel jogadores = lista.criar()
-lista.adicionar(jogadores, "Steve")
-lista.adicionar(jogadores, "Alex")
+variable players = list.create()
+list.add(players, "Steve")
+list.add(players, "Alex")
 
-para cada jogador em lista.ordenar(jogadores) {
-    imprimir(texto.maiusculas(jogador))
+for each player in list.sort(players) {
+    print(text.upper(player))
 }
 
-variavel placar = {"Steve": 10, "Alex": 20}
-mapa.definir(placar, "Alex", 25)
-imprimir(placar["Alex"])
-imprimir(texto.formatar("Jogadores: {quantidade}", {"quantidade": lista.tamanho(jogadores)}))
+variable scoreboard = {"Steve": 10, "Alex": 20}
+map.set(scoreboard, "Alex", 25)
+print(scoreboard["Alex"])
+print(text.format("Jogadores: {count}", {"count": list.length(players)}))

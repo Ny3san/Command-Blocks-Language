@@ -1,14 +1,84 @@
 {
-  "Variável": { "prefix": "var", "body": ["variavel ${1:nome} = ${2:valor}"], "description": "Cria uma variável" },
-  "Constante": { "prefix": "const", "body": ["constante ${1:NOME} = ${2:valor}"], "description": "Cria uma constante" },
-  "Função": { "prefix": "func", "body": ["funcao ${1:nome}(${2}) {", "\t$0", "}"], "description": "Cria uma função" },
-  "Evento": { "prefix": "evento", "body": ["evento ${1:inicio} {", "\t$0", "}"], "description": "Cria um evento" },
-  "Condição": { "prefix": "se", "body": ["se ${1:condicao} {", "\t$0", "}"], "description": "Cria uma condição" },
-  "Repetição": { "prefix": "rep", "body": ["repetir ${1:3} vezes {", "\t$0", "}"], "description": "Repete um bloco" },
-  "Enquanto": { "prefix": "enq", "body": ["enquanto ${1:condicao} {", "\t$0", "}"], "description": "Cria um loop enquanto" },
-  "Teste": { "prefix": "teste", "body": ["teste ${1:nome} {", "\t$0", "}"], "description": "Cria um teste" },
-  "Importar": { "prefix": "imp", "body": ["importar ${1:modulo}"], "description": "Importa uma biblioteca" },
-  "Permissão": { "prefix": "perm", "body": ["permissao ${1:rede}"], "description": "Declara uma permissão" },
-  "Bot Discord": { "prefix": "discordbot", "body": ["importar discord", "permissao rede", "", "bot = discord.conectar(segredo(\"DISCORD_TOKEN\"))", "$0"], "description": "Estrutura inicial de bot Discord" },
-  "Janela": { "prefix": "janela", "body": ["permissao window", "window.open(\"${1:Minha janela}\", 420, 240)", "${0}window.run()"], "description": "Estrutura inicial de janela Windows" }
+  "Variable": {
+    "prefix": "var",
+    "body": [
+      "variable ${1:name} = ${2:value}"
+    ],
+    "description": "Declares a variable"
+  },
+  "Constant": {
+    "prefix": "const",
+    "body": [
+      "constant ${1:NAME} = ${2:value}"
+    ],
+    "description": "Declares a constant"
+  },
+  "Function": {
+    "prefix": "func",
+    "body": [
+      "function ${1:name}(${2}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Declares a function"
+  },
+  "Event": {
+    "prefix": "event",
+    "body": [
+      "event ${1:start} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Declares an event"
+  },
+  "If": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Conditional block"
+  },
+  "Repeat": {
+    "prefix": "rep",
+    "body": [
+      "repeat ${1:3} times {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Repeats a block"
+  },
+  "While": {
+    "prefix": "while",
+    "body": [
+      "while ${1:condition} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Loop while a condition holds"
+  },
+  "Test": {
+    "prefix": "test",
+    "body": [
+      "test \"${1:name}\" {",
+      "\tassert(${2:condition})",
+      "}"
+    ],
+    "description": "Declares a test"
+  },
+  "Import": {
+    "prefix": "imp",
+    "body": [
+      "import ${1:library}"
+    ],
+    "description": "Imports an optional library"
+  },
+  "Permission": {
+    "prefix": "perm",
+    "body": [
+      "permission ${1:file}"
+    ],
+    "description": "Declares a permission"
+  }
 }

@@ -17,7 +17,6 @@ const MAGIC: &[u8; 8] = b"CBPKG001";
 pub const APP_PT: &str = "# Seu aplicativo começa aqui.\nimprimir(\"Olá, Command Blocks!\")\n";
 pub const APP_EN: &str = "# Your application starts here.\nprint(\"Hello, Command Blocks!\")\n";
 pub const DATAPACK: &str = "variavel pontos = 0\n\nfuncao ganhar_ponto() {\n    pontos = pontos + 1\n    imprimir(\"Pontuação: \" + pontos)\n}\n\nevento inicio {\n    imprimir(\"Sistema iniciado\")\n    repetir 5 vezes {\n        ganhar_ponto()\n    }\n}\n";
-pub const DISCORD: &str = "# Interface inicial: transporte Discord ainda não implementado em 0.1.\n# Initial interface: Discord transport is not implemented in 0.1.\nimportar discord\npermissao rede\n\nevento inicio {\n    discord.iniciar(segredo(\"DISCORD_TOKEN\"))\n}\n";
 struct Args {
     positional: Vec<String>,
     options: BTreeMap<String, Vec<String>>,
@@ -103,9 +102,7 @@ impl Args {
             .iter()
             .map(|p| catalog::canonical(p))
             .collect();
-        if permissions.iter().any(|p| {
-            !["file", "process", "net", "minecraft_bridge", "window"].contains(&p.as_str())
-        }) {
+        if permissions.iter().any(|p| !["file"].contains(&p.as_str())) {
             return Err(argument_error());
         }
         Ok(permissions)
@@ -349,20 +346,13 @@ pub fn main_entry(raw: Vec<String>) -> i32 {
                         DATAPACK,
                         "# Command Blocks\n\ncb convert main.cb --target minecraft --output datapack\n",
                     ),
-                    "discord-bot" => (
-                        DISCORD,
-                        "# Discord scaffold / estrutura inicial\n\nTransport is not implemented in 0.1. / Transporte não implementado em 0.1.\n\ncb install discord\nSet DISCORD_TOKEN outside source. / Defina DISCORD_TOKEN fora do código.\ncb check main.cb\ncb run main.cb --allow net\n\nRun returns CB202 until a transport adapter exists. / Execução retorna CB202 até existir um adaptador.\n",
-                    ),
                     _ => return Err(argument_error()),
                 };
                 publish(
                     &BTreeMap::from([
                         ("main.cb".into(), source.into()),
                         ("README.md".into(), readme.into()),
-                        (
-                            ".gitignore".into(),
-                            ".env\n*.secret\n.cb-libraries\n".into(),
-                        ),
+                        (".gitignore".into(), ".env\n*.secret\n".into()),
                     ]),
                     Path::new(args.pos(2)?),
                 )?;
@@ -374,57 +364,6 @@ pub fn main_entry(raw: Vec<String>) -> i32 {
                         "Projeto criado."
                     }
                 );
-            }
-            "list" | "info" | "install" => {
-                args.validate(
-                    if command == "list" { 1 } else { 2 },
-                    if command == "list" { 1 } else { 2 },
-                    &[],
-                )?;
-                if command == "list" {
-                    println!(
-                        "minecraft_bridge: HTTP loopback client / cliente HTTP local\ndiscord: scaffold only / apenas estrutura inicial"
-                    );
-                } else {
-                    let name = catalog::canonical(args.pos(1)?);
-                    if name != "discord" && name != "minecraft_bridge" {
-                        return Err(Error::new(
-                            "CB202",
-                            Span::default(),
-                            "Biblioteca opcional indisponível.",
-                            "Optional library unavailable.",
-                        )
-                        .hint("Consulte cb list.", "See cb list."));
-                    }
-                    if command == "info" {
-                        help(Some(&name), english);
-                    } else {
-                        let path = Path::new(".cb-libraries");
-                        let existing = fs::read_to_string(path).unwrap_or_default();
-                        let mut libraries: BTreeSet<String> =
-                            existing.lines().map(|s| s.to_string()).collect();
-                        libraries.insert(name.clone());
-                        fs::write(
-                            path,
-                            libraries.into_iter().collect::<Vec<_>>().join("\n") + "\n",
-                        )
-                        .map_err(|_| io_error())?;
-                        println!(
-                            "{}",
-                            if name == "discord" {
-                                if english {
-                                    "Discord enabled: experimental Windows REST client; gateway/events are not implemented."
-                                } else {
-                                    "Discord habilitado: cliente REST Windows experimental; gateway/eventos não implementados."
-                                }
-                            } else if english {
-                                "Local bridge client enabled; authentication still required."
-                            } else {
-                                "Cliente da ponte local habilitado; autenticação continua obrigatória."
-                            }
-                        );
-                    }
-                }
             }
             _ => return Err(argument_error()),
         }
@@ -458,28 +397,12 @@ fn help(topic: Option<&str>, english: bool) {
         Some("minecraft") => println!(
             "Minecraft Java 1.21 / 1.21.1\nminecraft.message/mensagem(selector, text)\nminecraft.give_item/dar_item(selector, item, count)\nminecraft.teleport/teleportar(selector, x, y, z)\nminecraft.weather/clima(text)\nminecraft.time/horario(integer)\ncb convert FILE --target minecraft --mc-version 1.21.1 --output DIR"
         ),
-        Some("discord") => println!(
-            "{}",
-            if english {
-                "Experimental Windows REST client: discord.connect(secret(\"DISCORD_TOKEN\")), discord.send(channel, text). Requires cb install discord, import discord, permission net and --allow net. Gateway/events are not implemented: discord.start returns CB202. No live Discord validation yet."
-            } else {
-                "Cliente REST Windows experimental: discord.conectar(segredo(\"DISCORD_TOKEN\")), discord.enviar(canal, texto). Exige cb install discord, importar discord, permissao rede e --allow net. Gateway/eventos não implementados: discord.iniciar retorna CB202. Ainda sem validação ao vivo no Discord."
-            }
-        ),
-        Some("minecraft_bridge") => println!(
-            "{}",
-            if english {
-                "Authenticated local HTTP client. cb install minecraft_bridge; import minecraft_bridge; permission minecraft_bridge; --allow minecraft_bridge. Set CB_BRIDGE_URL=http://127.0.0.1:PORT/command and CB_BRIDGE_TOKEN. Commands: say and tp. An external server/plugin must implement the protocol; no server is included."
-            } else {
-                "Cliente HTTP local autenticado. cb install minecraft_bridge; importar ponte_minecraft; permissao minecraft_bridge; --allow minecraft_bridge. Defina CB_BRIDGE_URL=http://127.0.0.1:PORT/command e CB_BRIDGE_TOKEN. Comandos: say e tp. Um servidor/plugin externo precisa implementar o protocolo; servidor não incluído."
-            }
-        ),
         Some(_) => println!(
             "{}",
             if english {
-                "See docs/en/README.md for the implemented library catalog."
+                "See docs/bibliotecas.md (in Portuguese) for the implemented library catalog."
             } else {
-                "Consulte docs/pt-br/README.md para o catálogo implementado."
+                "Consulte docs/bibliotecas.md para o catálogo implementado."
             }
         ),
         None => {
@@ -489,8 +412,7 @@ fn help(topic: Option<&str>, english: bool) {
                 if english { "Usage" } else { "Uso" }
             );
             for name in [
-                "run", "check", "convert", "build", "format", "test", "create", "install", "list",
-                "info", "help",
+                "run", "check", "convert", "build", "format", "test", "create", "help",
             ] {
                 let (_, pt, en, _) = command_help(name).unwrap();
                 println!("  {name:<9} {}", if english { en } else { pt });
@@ -542,28 +464,10 @@ fn command_help(name: &str) -> Option<(&'static str, &'static str, &'static str,
             "cb test examples/tests.cb",
         ),
         "create" => (
-            "cb create app|minecraft-datapack|discord-bot DIR",
-            "Cria um projeto novo. O template Discord ainda usa uma interface incompleta.",
-            "Creates a new project. The Discord template still uses an incomplete interface.",
+            "cb create app|minecraft-datapack DIR",
+            "Cria um projeto novo.",
+            "Creates a new project.",
             "cb create app meu_app",
-        ),
-        "install" => (
-            "cb install discord|minecraft_bridge",
-            "Habilita uma biblioteca opcional neste projeto; não baixa pacotes.",
-            "Enables an optional library in this project; does not download packages.",
-            "cb install discord",
-        ),
-        "list" => (
-            "cb list",
-            "Lista as bibliotecas opcionais conhecidas.",
-            "Lists known optional libraries.",
-            "cb list",
-        ),
-        "info" => (
-            "cb info LIBRARY",
-            "Mostra informações sobre uma biblioteca opcional.",
-            "Shows information about an optional library.",
-            "cb info minecraft_bridge",
         ),
         "help" => (
             "cb help [COMMAND|LIBRARY]",

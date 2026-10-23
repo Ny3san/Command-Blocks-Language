@@ -85,8 +85,8 @@ pub fn incompatible(span: Span) -> Error {
         "Feature incompatible with this environment or backend.",
     )
     .hint(
-        "Use o subconjunto documentado; mantenha APIs externas no computador com minecraft_bridge.",
-        "Use the documented subset; keep external APIs on the computer with minecraft_bridge.",
+        "Use o subconjunto documentado do backend Minecraft.",
+        "Use the documented subset of the Minecraft backend.",
     )
 }
 
