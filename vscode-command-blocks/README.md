@@ -1,21 +1,47 @@
-# Command Blocks Language para VS Code
+# Command Blocks para VS Code
 
-Extensão local para arquivos `.cb`: syntax highlighting, snippets, autocompletar de palavras-chave/bibliotecas e comandos para verificar/executar o arquivo.
+Extensão para arquivos `.cb`. Oferece:
 
-## Instalação rápida no Windows
+- realce de sintaxe para palavras-chave (em inglês e em português), textos, números, comentários e funções;
+- autocompletar de palavras-chave, funções e bibliotecas;
+- snippets para estruturas comuns;
+- comandos para verificar e executar o arquivo aberto.
 
-Na pasta desta extensão, execute:
+## Instalar
 
-```powershell
-code --install-extension .\command-blocks-language-0.1.0.vsix
+Requer [Node.js](https://nodejs.org/) e o VS Code 1.85 ou superior.
+
+Na pasta `vscode-command-blocks`, gere o pacote e instale:
+
+```text
+npx @vscode/vsce package
+code --install-extension command-blocks-language-0.1.0.vsix
 ```
 
-Se o `.vsix` ainda não existir, use o comando de empacotamento indicado pelo assistente ou pressione `F5` no VS Code para testar em uma janela Extension Development Host.
+Para testar sem instalar, abra a pasta no VS Code e pressione `F5`. Uma nova janela (Extension Development Host) será aberta com a extensão ativa.
 
-O executável pode ser configurado em `settings.json`:
+## Configurar o executável
+
+Os comandos de verificação e execução usam o executável `cb`. Se ele não estiver no `PATH`, indique o caminho em `settings.json`:
 
 ```json
 {
-  "commandBlocks.executable": "D:\\pinto\\target\\release\\cb.exe"
+  "commandBlocks.executable": "C:\\caminho\\para\\cb.exe"
 }
 ```
+
+## Snippets
+
+| Prefixo | Gera |
+|---|---|
+| `var` | `variable` |
+| `const` | `constant` |
+| `func` | `function` |
+| `event` | `event` |
+| `if` | `if` |
+| `rep` | `repeat ... times` |
+| `while` | `while` |
+| `test` | `test` com `assert` |
+| `imp` | `import` |
+| `perm` | `permission` |
+| `window` | Janela (experimental, Windows) |

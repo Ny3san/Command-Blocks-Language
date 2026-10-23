@@ -3,41 +3,106 @@
   "name": "Command Blocks",
   "scopeName": "source.cb",
   "patterns": [
-    { "include": "#comments" },
-    { "include": "#strings" },
-    { "include": "#numbers" },
-    { "include": "#keywords" },
-    { "include": "#constants" },
-    { "include": "#builtin-functions" },
-    { "include": "#function-definitions" },
-    { "include": "#operators" }
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#builtin-functions"
+    },
+    {
+      "include": "#function-definitions"
+    },
+    {
+      "include": "#operators"
+    }
   ],
   "repository": {
-    "comments": { "patterns": [
-      { "name": "comment.line.number-sign.cb", "match": "#.*$" },
-      { "name": "comment.line.double-slash.cb", "match": "//.*$" }
-    ] },
-    "strings": { "name": "string.quoted.double.cb", "begin": "\\\"", "end": "\\\"", "patterns": [
-      { "name": "constant.character.escape.cb", "match": "\\\\[nrt\\\\\\\"']" }
-    ] },
-    "numbers": { "patterns": [
-      { "name": "constant.numeric.cb", "match": "\\b[0-9]+(?:\\.[0-9]+)?\\b" }
-    ] },
-    "keywords": { "patterns": [
-      { "name": "keyword.control.cb", "match": "\\b(variavel|variable|constante|constant|funcao|function|se|if|senao|else|enquanto|while|repetir|repeat|vezes|times|para|for|cada|each|em|in|evento|event|teste|test|retornar|return|importar|import|permissao|permission)\\b" }
-    ] },
-    "constants": { "patterns": [
-      { "name": "constant.language.cb", "match": "\\b(verdadeiro|true|falso|false|nulo|null)\\b" }
-    ] },
-    "builtin-functions": { "patterns": [
-      { "name": "support.function.cb", "match": "\\b(imprimir|print|ler|input|tamanho|length|tipo|type|texto|text|numero|number|lista|list|mapa|map|json|tempo|time|arquivo|file|discord|minecraft|window)\\b(?=\\s*\\()" }
-    ] },
-    "function-definitions": { "patterns": [
-      { "name": "entity.name.function.cb", "match": "(?<=\\b(funcao|function)\\s+)[A-Za-z_][A-Za-z0-9_]*" },
-      { "name": "entity.name.function.call.cb", "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()" }
-    ] },
-    "operators": { "patterns": [
-      { "name": "keyword.operator.cb", "match": "==|!=|<=|>=|=|\\+|-|\\*|/|%|<|>|\\b(e|and|ou|or|nao|not)\\b" }
-    ] }
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.cb",
+          "match": "#.*$"
+        },
+        {
+          "name": "comment.line.double-slash.cb",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.cb",
+      "begin": "\\\"",
+      "end": "\\\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.cb",
+          "match": "\\\\[nrt\\\\\\\"']"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.cb",
+          "match": "\\b[0-9]+(?:\\.[0-9]+)?\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.cb",
+          "match": "\\b(variable|variavel|constant|constante|function|funcao|if|se|else|senao|while|enquanto|repeat|repetir|times|vezes|for|para|each|cada|in|em|event|evento|test|teste|return|retornar|import|importar|permission|permissao|and|e|or|ou|not|nao)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.cb",
+          "match": "\\b(true|verdadeiro|false|falso|null|nulo)\\b"
+        }
+      ]
+    },
+    "builtin-functions": {
+      "patterns": [
+        {
+          "name": "support.function.cb",
+          "match": "\\b(print|imprimir|assert|verificar|secret|segredo|text|texto|math|matematica|list|lista|map|mapa|json|time|tempo|io|file|arquivo|net|rede|window|janela|minecraft|minecraft_bridge|ponte_minecraft)\\b(?=\\s*\\()"
+        }
+      ]
+    },
+    "function-definitions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.cb",
+          "match": "(?<=\\b(funcao|function)\\s+)[A-Za-z_][A-Za-z0-9_]*"
+        },
+        {
+          "name": "entity.name.function.call.cb",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.cb",
+          "match": "==|!=|<=|>=|=|\\+|-|\\*|/|%|<|>|\\b(e|and|ou|or|nao|not)\\b"
+        }
+      ]
+    }
   }
 }
