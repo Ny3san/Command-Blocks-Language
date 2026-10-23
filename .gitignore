@@ -20,3 +20,11 @@ node_modules/
 # Environment secrets
 .env
 *.secret
+
+# Developer-only files (quem desenvolve a linguagem; não fazem parte do pacote do usuário)
+/.github/
+/tests/
+/scripts/
+/CONTRIBUTING.md
+/RELATORIO_CORRECOES.md
+/.editorconfig
