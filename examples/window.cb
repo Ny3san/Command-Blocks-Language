@@ -1,12 +1,12 @@
-permissao janela
+permission window
 
-janela.abrir("Command Blocks", 420, 240)
-variavel nome = janela.entrada("Steve", 20, 20, 240, 28)
-variavel saudacao = janela.rotulo("Digite seu nome", 20, 60, 340, 28)
-variavel botao = janela.botao("Cumprimentar", "cumprimentar", 20, 100, 160, 32)
+window.open("Command Blocks", 420, 240)
+variable name = window.input("Steve", 20, 20, 240, 28)
+variable greeting = window.label("Digite seu nome", 20, 60, 340, 28)
+variable button = window.button("Cumprimentar", "greet", 20, 100, 160, 32)
 
-evento cumprimentar {
-    janela.definir_texto(saudacao, "Olá, " + janela.texto(nome))
+event greet {
+    window.set_text(greeting, "Olá, " + window.text(name))
 }
 
-janela.executar()
+window.run()

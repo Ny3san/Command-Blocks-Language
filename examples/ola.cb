@@ -1,14 +1,14 @@
-variavel nome = "Steve"
-constante limite = 10
+variable name = "Steve"
+constant limit = 10
 
-funcao cumprimentar(pessoa) {
-    imprimir("Olá, " + pessoa)
+function greet(person) {
+    print("Olá, " + person)
 }
 
-evento inicio {
-    se limite >= 10 {
-        cumprimentar(nome)
-    } senao {
-        imprimir("O limite ainda não foi atingido")
+event start {
+    if limit >= 10 {
+        greet(name)
+    } else {
+        print("O limite ainda não foi atingido")
     }
 }

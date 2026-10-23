@@ -411,12 +411,12 @@ fn minecraft_scoreboard_behavior_matches_interpreter() {
     }
 }
 
-// Testes de regressão das correções da branch refactor/melhoria-linguagem.
+// Regression tests for fixes made on the refactor/melhoria-linguagem branch.
 
 #[test]
 fn regression_invalid_escape_span_points_to_backslash() {
-    // "print(\"aaaa\\xb\")": a barra invertida está na coluna 12.
-    // Antes da correção o erro apontava para a aspa de abertura (coluna 7).
+    // In `print("aaaa\xb")` the backslash is at column 12.
+    // Before the fix, the error pointed at the opening quote (column 7).
     let err = compile("print(\"aaaa\\xb\")").unwrap_err();
     assert_eq!(err.code, "CB001");
     assert_eq!(err.span.line, 1);
@@ -425,8 +425,8 @@ fn regression_invalid_escape_span_points_to_backslash() {
 
 #[test]
 fn event_emit_resolves_aliases() {
-    // Guarda de comportamento (não era bug): "mensagem" canoniza para "message"
-    // dentro de Runtime::emit, então evento.emitir usa o alias sem correção extra.
+    // Behavior guard (not a bug fix): the alias "mensagem" resolves to "message"
+    // inside Runtime::emit, so event.emit already accepts aliases.
     let out = run(
         "evento mensagem {\n    print(\"msg\")\n}\nevento inicio {\n    evento.emitir(\"mensagem\")\n}",
     )

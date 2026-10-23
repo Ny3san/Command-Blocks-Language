@@ -1,16 +1,16 @@
-funcao somar(a, b) {
-    retornar a + b
+function add(a, b) {
+    return a + b
 }
 
-teste "soma corretamente" {
-    verificar(somar(2, 2) == 4)
+test "sums correctly" {
+    assert(add(2, 2) == 4)
 }
 
-test "text aliases" {
-    assert(texto.maiusculas("abc") == text.upper("abc"))
+test "text functions" {
+    assert(text.upper("abc") == "ABC")
 }
 
-teste "coleções" {
-    variavel valores = [3, 1, 2]
-    verificar(lista.obter(lista.ordenar(valores), 0) == 1)
+test "collections" {
+    variable values = [3, 1, 2]
+    assert(list.get(list.sort(values), 0) == 1)
 }
