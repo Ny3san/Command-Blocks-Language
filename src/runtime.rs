@@ -765,10 +765,19 @@ impl Runtime {
                 Null
             }
             "map.get" => index(a[0].clone(), a[1].clone(), span)?,
+            "map.remove" => {
+                let m = map(0)?;
+                if m.borrow_mut().remove(text(1)?).is_none() {
+                    return Err(index_error(span));
+                }
+                Null
+            }
             "map.contains" => Bool(map(0)?.borrow().contains_key(text(1)?)),
             "map.keys" => Value::list(map(0)?.borrow().keys().map(|s| Text(s.clone())).collect()),
             "event.emit" => {
-                self.emit(text(0)?)?;
+                // Canonicalise so that emitir("inicio") triggers evento inicio.
+                let canonical = catalog::event(text(0)?).to_string();
+                self.emit(&canonical)?;
                 Null
             }
             "io.environment" => Text("external".into()),

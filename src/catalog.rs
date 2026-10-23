@@ -161,6 +161,7 @@ pub fn spec(name: &str) -> Option<Spec> {
         "map.set" => (vec![Map, Text, Any], Null),
         "map.get" => (vec![Map, Text], Any),
         "map.contains" => (vec![Map, Text], Bool),
+        "map.remove" => (vec![Map, Text], Null),
         "map.keys" => (vec![Map], List),
         "map.length" => (vec![Map], Int),
         "io.read_text" => (vec![Text], Text),
