@@ -1,14 +1,6 @@
 # Command Blocks
 
-Command Blocks (CB) é uma linguagem de programação simples para criar **scripts, ferramentas de terminal e datapacks de Minecraft**.
-
-- O código é escrito em **inglês** (`print`, `variable`, `function`…).
-- A documentação é em **português**.
-- O compilador e o interpretador são feitos em Rust, mas você **não precisa saber Rust** para usar a linguagem.
-
-> **Status:** versão inicial de desenvolvimento (0.1). Algumas partes funcionam bem, outras são experimentais e algumas ainda não existem. Veja o que está pronto em [Estado atual](#estado-atual).
-
-## Exemplo
+Command Blocks (CB) é uma linguagem de programação simples para **scripts, ferramentas de terminal e datapacks de Minecraft**.
 
 ```text
 variable points = 0
@@ -33,58 +25,49 @@ Pontuação: 2
 Pontuação: 3
 ```
 
-## Instalação
+## Características
 
-Você precisa do [Rust](https://rustup.rs/) instalado.
+- Sintaxe curta, com blocos delimitados por chaves.
+- Palavras-chave em inglês, com aliases em português.
+- Mensagens de erro com localização, código e sugestão, em português e inglês.
+- Permissões explícitas para arquivos, rede e janelas.
+- Geração de datapack para Minecraft Java 1.21 e 1.21.1.
+- Interpretador escrito em Rust, sem dependências externas no núcleo.
+
+## Estado
+
+Esta é uma **versão inicial de desenvolvimento (0.1)**.
+
+| Recurso | Estado |
+|---|---|
+| Linguagem: variáveis, funções, controle de fluxo, eventos e testes | Funciona |
+| Biblioteca padrão: texto, listas, mapas, matemática e JSON | Funciona |
+| Permissões, segredos e limites de execução | Funciona |
+| Datapack para Minecraft Java 1.21 e 1.21.1 | Funciona; validação no jogo pendente |
+| Janelas e rede (Windows) | Experimental |
+| Ponte Minecraft | Cliente pronto; servidor não incluído |
+| Discord | Não funcional |
+| Automação de teclas no cliente Minecraft | Não implementado |
+
+## Documentação
+
+A documentação completa está em [docs/](docs/README.md):
+
+- [Tutorial](docs/tutorial/01-primeiro-programa.md) para começar do zero.
+- [Referência da linguagem](docs/referencia/README.md).
+- [Biblioteca padrão](docs/biblioteca/biblioteca-padrao.md).
+- [Ferramentas](docs/ferramentas/README.md): instalação, linha de comando e erros.
+- [Guias](docs/guias/README.md): segurança, Minecraft, janelas, rede e integrações.
+
+## Instalação rápida
+
+Com [Rust](https://rustup.rs/) instalado:
 
 ```text
 cargo build --release --offline
 ```
 
-O executável fica em `target/release/cb` (Linux/macOS) ou `target\release\cb.exe` (Windows). Copie-o para uma pasta do seu `PATH`.
-
-No Windows com a toolchain MSVC, é necessário o **Visual Studio Build Tools** com C++ e Windows SDK. Detalhes em [Primeiros passos](docs/primeiros-passos.md).
-
-## Uso rápido
-
-```text
-cb run hello.cb                  # executa um programa
-cb check hello.cb                # verifica erros sem executar
-cb test tests.cb                 # executa os blocos test
-cb convert hello.cb --target minecraft --output meu_datapack
-cb help                          # lista os comandos
-```
-
-## Estado atual
-
-| Parte | Estado |
-|---|---|
-| Variáveis, funções, `if`, `while`, `for each`, `repeat` | Funciona |
-| Eventos `start` e testes (`test`) | Funciona |
-| Listas, mapas, texto, matemática, JSON | Funciona |
-| Permissões e segredos (`--allow`) | Funciona |
-| Diagnósticos em português e inglês | Funciona |
-| Gerar datapack Minecraft Java 1.21 / 1.21.1 | Funciona (testado só com scoreboards simulados; falta validar no jogo) |
-| Janelas nativas (Windows) | Experimental |
-| Rede HTTP (Windows) | Experimental |
-| Ponte HTTP com servidor Minecraft | Cliente pronto; servidor não incluído |
-| Bot do Discord | **Não funciona** ainda |
-| Automação de teclas no cliente Minecraft | **Não implementado** |
-
-## Documentação
-
-- [Primeiros passos](docs/primeiros-passos.md): seu primeiro programa.
-- [Linguagem](docs/linguagem.md): sintaxe, tipos, funções e eventos.
-- [Bibliotecas](docs/bibliotecas.md): funções prontas (texto, listas, mapas, JSON…).
-- [Aplicativos de terminal](docs/aplicativos.md): programas que leem e escrevem arquivos.
-- [Minecraft](docs/minecraft.md): gerar um datapack.
-- [Integrações](docs/integracoes.md): janelas, rede, ponte Minecraft e Discord.
-- [Permissões e segurança](docs/seguranca.md).
-- [Erros](docs/erros.md): o que significa cada código `CBxxx`.
-- [CLI](docs/cli.md): todos os comandos.
-- [Arquitetura](docs/arquitetura.md): como o projeto é organizado, para quem quer contribuir.
-- [Roadmap](docs/roadmap.md): o que ainda não existe.
-- [Gramática formal](docs/grammar.ebnf).
+O executável fica em `target/release/cb`. Detalhes em [Instalação](docs/ferramentas/instalacao.md).
 
 ## Contribuir
 

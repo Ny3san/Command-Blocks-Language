@@ -15,7 +15,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - Script `publicar-command-blocks-github.bat` (continha caminho local).
 
 ### Documentação
-- Documentação reescrita em português simples. Removidas as versões em inglês (`docs/en/`) e os arquivos internos de marcos e verificação.
+- Documentação reorganizada em tutorial, referência da linguagem, biblioteca padrão, ferramentas, guias e projeto, com índice em `docs/README.md`.
+- Removidas as versões em inglês (`docs/en/`) e os arquivos internos de marcos e verificação.
+- Exemplos da documentação são verificados com `cb check`. Nomes de funções, aliases e códigos de erro foram conferidos contra o código.
 - Exemplos e trechos de código da documentação usam nomes em inglês.
 
 ### Código
