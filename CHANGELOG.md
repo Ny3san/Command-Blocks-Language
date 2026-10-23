@@ -5,6 +5,12 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ## [Não lançado]
 
+### Removido
+- Integrações que não funcionavam ou não podiam ser verificadas: Discord, ponte Minecraft, janelas nativas e rede HTTP. Os comandos `install`, `list`, `info` e o template `discord-bot` também saíram.
+- Permissões `net`, `window`, `process` e `minecraft_bridge`. Permanece apenas `file`.
+- Alias `data` (apontava para um módulo inexistente).
+- Snippet e autocompletar correspondentes na extensão VS Code.
+
 ### Corrigido
 - Span do erro de escape inválido (`CB001`) agora aponta para a barra invertida, não para a aspa de abertura.
 - `mapa.remover` / `map.remove` implementado: remove a chave e retorna `CB107` quando ela não existe. O alias já estava mapeado, mas a função não existia.

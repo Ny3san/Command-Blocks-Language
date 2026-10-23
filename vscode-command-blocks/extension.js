@@ -66,13 +66,7 @@ const items = [
   ["io", "module", "Input and output"],
   ["file", "module", "File functions (needs permission file)"],
   ["arquivo", "module", "Alias de file \u2014 File functions (needs permission file)"],
-  ["net", "module", "Network (Windows, experimental; needs permission net)"],
-  ["rede", "module", "Alias de net \u2014 Network (Windows, experimental; needs permission net)"],
-  ["window", "module", "Windows UI (experimental; needs permission window)"],
-  ["janela", "module", "Alias de window \u2014 Windows UI (experimental; needs permission window)"],
-  ["minecraft", "module", "Minecraft datapack functions"],
-  ["minecraft_bridge", "module", "Minecraft bridge client (needs permission minecraft_bridge)"],
-  ["ponte_minecraft", "module", "Alias de minecraft_bridge \u2014 Minecraft bridge client (needs permission minecraft_bridge)"]
+  ["minecraft", "module", "Minecraft datapack functions"]
 ];
 
 function completionProvider() {

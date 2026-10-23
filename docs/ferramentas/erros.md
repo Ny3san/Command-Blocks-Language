@@ -30,14 +30,13 @@ Suggestion: Review the statement and its arguments.
 | CB107 | Índices | Índice ou chave inexistente |
 | CB108 | Operações | Operação inválida, como divisão por zero |
 | CB201 | Ambiente | Recurso incompatível com o ambiente ou com o destino |
-| CB202 | Integrações | Biblioteca ausente, não habilitada ou sem transporte implementado |
+| CB202 | Biblioteca ou recurso | Biblioteca não existe, ou recurso reservado ainda não implementado |
 | CB203 | Versão | Versão do Minecraft não suportada |
 | CB204 | Namespace | Namespace inválido |
 | CB205 | Destino | O destino já existe |
 | CB301 | Permissões | Permissão não declarada no programa ou não autorizada na CLI |
 | CB302 | Limites de execução | Limite de passos, recursão ou tamanho atingido |
 | CB303 | Segredos | Variável de ambiente exigida por `secret` não existe |
-| CB304 | Integrações | Falha de comunicação com um serviço externo |
 | CB401 | Verificação | Falha de `assert` ou de verificação interna |
 
 ## Erros conhecidos

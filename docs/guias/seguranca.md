@@ -24,9 +24,6 @@ Se faltar uma delas, o recurso não é usado e a execução falha com `CB301`.
 | Declaração | Nome em `--allow` | Alias em português |
 |---|---|---|
 | `permission file` | `file` | `arquivo` |
-| `permission net` | `net` | `rede` |
-| `permission window` | `window` | `janela` |
-| `permission minecraft_bridge` | `minecraft_bridge` | `ponte_minecraft` |
 
 Operações que não usam recursos externos, como `json.*`, `text.*` e `math.*`, não exigem permissão.
 
@@ -59,7 +56,6 @@ Para proteger contra programas que não terminam, a execução tem limites:
 - número de passos (`--max-steps`, padrão 100000);
 - profundidade de recursão e de aninhamento;
 - tamanho do código-fonte e dos valores;
-- tamanho e frequência das respostas de rede.
 
 Esses limites não substituem isolamento completo de memória ou de processador.
 

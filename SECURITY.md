@@ -20,7 +20,6 @@ Respondemos em até 7 dias corridos com confirmação e prazo estimado.
 
 ## Escopo relevante
 
-A linguagem tem recursos que acessam o sistema: arquivos, rede (`net.*`), janelas
-(`window.*`), Discord e a ponte HTTP. Esses recursos exigem permissões explícitas
-(`--allow-*`). Relatos sobre contorno dessas permissões, execução de código fora do
-interpretador ou vazamento de segredos (`secret`, tokens do Discord) são prioritários.
+A linguagem tem recursos que acessam o sistema, como arquivos (`file.*`). Esses recursos exigem permissões explícitas
+(`--allow nome`). Relatos sobre contorno dessas permissões, execução de código fora do
+interpretador ou vazamento de segredos (`secret`) são prioritários.

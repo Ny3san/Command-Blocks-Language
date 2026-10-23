@@ -44,4 +44,3 @@ Os comandos de verificação e execução usam o executável `cb`. Se ele não e
 | `test` | `test` com `assert` |
 | `imp` | `import` |
 | `perm` | `permission` |
-| `window` | Janela (experimental, Windows) |

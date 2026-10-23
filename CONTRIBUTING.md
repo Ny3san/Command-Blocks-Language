@@ -7,7 +7,7 @@ Obrigado pelo interesse! Este projeto está em desenvolvimento inicial.
 - Escreva **código e comentários em inglês**.
 - Escreva **documentação em português**. Os exemplos de código dentro da documentação usam a forma em inglês.
 - Mensagens para o usuário são bilíngues (português e inglês), como já funciona.
-- **Não envie credenciais**, arquivos `.env`, `.cb-libraries`, pastas `target/` nem programas empacotados com dados privados.
+- **Não envie credenciais**, arquivos `.env`, pastas `target/` nem programas empacotados com dados privados.
 - Não marque como pronto algo que não foi testado. Se uma parte for experimental, diga isso na documentação.
 
 ## Preparar o ambiente

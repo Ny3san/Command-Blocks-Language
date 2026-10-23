@@ -80,7 +80,7 @@
       "patterns": [
         {
           "name": "support.function.cb",
-          "match": "\\b(print|imprimir|assert|verificar|secret|segredo|text|texto|math|matematica|list|lista|map|mapa|json|time|tempo|io|file|arquivo|net|rede|window|janela|minecraft|minecraft_bridge|ponte_minecraft)\\b(?=\\s*\\()"
+          "match": "\\b(print|imprimir|assert|verificar|secret|segredo|text|texto|math|matematica|list|lista|map|mapa|json|time|tempo|io|file|arquivo|minecraft)\\b(?=\\s*\\()"
         }
       ]
     },

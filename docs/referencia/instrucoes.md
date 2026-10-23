@@ -80,7 +80,7 @@ permission <resource>
 ```
 
 - `import` habilita uma biblioteca opcional.
-- `permission` declara que o programa usa um recurso externo, como `file`, `net`, `window` ou `minecraft_bridge`.
+- `permission` declara que o programa usa um recurso externo. Atualmente, o único recurso disponível é `file`.
 - A declaração não basta. O usuário também precisa autorizar com `--allow` na execução. Veja [Permissões e segurança](../guias/seguranca.md).
 
 `import`, `permission`, `function`, `event` e `test` só podem aparecer no nível principal do arquivo.

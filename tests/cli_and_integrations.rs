@@ -1,12 +1,8 @@
-use command_blocks::{compile, integrations::valid_command, runtime::Runtime};
 use std::{
     fs,
-    io::{Read, Write},
-    net::TcpListener,
     path::PathBuf,
     process::Command,
     sync::atomic::{AtomicUsize, Ordering},
-    thread,
 };
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 struct Temp(PathBuf);
@@ -78,8 +74,7 @@ fn help_and_version_are_localized_non_executing_and_consistent() {
     }
     assert!(!tmp.0.join("main.cb").exists());
     for command in [
-        "run", "check", "convert", "build", "format", "test", "create", "install", "list", "info",
-        "help",
+        "run", "check", "convert", "build", "format", "test", "create", "help",
     ] {
         for lang in ["pt-br", "en"] {
             let result = tmp.cb(&[command, "--help", "--lang", lang]);
@@ -202,7 +197,7 @@ fn cli_creates_converts_and_leaves_no_partial_pack_on_error() {
     assert!(!error.contains("private.txt"));
 }
 #[test]
-fn formatting_backups_and_optional_registry() {
+fn formatting_creates_backups() {
     let tmp = Temp::new();
     let source = "if true {\nprint(1)\n}\n";
     fs::write(tmp.0.join("main.cb"), source).unwrap();
@@ -216,124 +211,4 @@ fn formatting_backups_and_optional_registry() {
             .unwrap()
             .contains("    print")
     );
-    assert!(tmp.cb(&["install", "minecraft_bridge"]).status.success());
-    assert!(tmp.cb(&["list"]).status.success());
-    assert!(!tmp.cb(&["install", "unknown"]).status.success());
-    assert!(tmp.cb(&["create", "discord-bot", "bot"]).status.success());
-}
-#[test]
-fn discord_scaffold_fails_honestly_and_never_leaks_token() {
-    let tmp = Temp::new();
-    fs::write(tmp.0.join(".cb-libraries"), "discord\n").unwrap();
-    fs::write(
-        tmp.0.join("bot.cb"),
-        "import discord\npermission net\ndiscord.start(secret(\"DISCORD_TOKEN\"))",
-    )
-    .unwrap();
-    let result = Command::new(env!("CARGO_BIN_EXE_cb"))
-        .current_dir(&tmp.0)
-        .args(["run", "bot.cb", "--allow", "net", "--lang", "en"])
-        .env("DISCORD_TOKEN", "token-must-not-appear")
-        .output()
-        .unwrap();
-    assert!(!result.status.success());
-    let error = String::from_utf8(result.stderr).unwrap();
-    assert!(error.contains("CB202"));
-    assert!(error.contains("not implemented"));
-    assert!(!error.contains("token-must-not-appear"));
-    assert!(result.stdout.is_empty());
-}
-fn bridge_runtime(tmp: &Temp) -> Runtime {
-    fs::write(tmp.0.join(".cb-libraries"), "minecraft_bridge\n").unwrap();
-    let program = compile("import minecraft_bridge\npermission minecraft_bridge\nminecraft_bridge.send(\"say Hello\")").unwrap();
-    let mut rt = Runtime::new(program, &tmp.0);
-    rt.allow.insert("minecraft_bridge".into());
-    rt.environment.remove("CB_BRIDGE_URL");
-    rt.environment.remove("CB_BRIDGE_TOKEN");
-    rt
-}
-#[test]
-fn bridge_is_disabled_without_auth_and_blocks_command_injection() {
-    let tmp = Temp::new();
-    let mut rt = bridge_runtime(&tmp);
-    assert_eq!(rt.run().unwrap_err().code, "CB301");
-    for command in [
-        "stop",
-        "op Steve",
-        "say hello\nstop",
-        "tp @a 1 2 3",
-        "tp Steve 999999999 2 3",
-    ] {
-        assert!(!valid_command(command));
-    }
-    assert!(valid_command("say hello"));
-    assert!(valid_command("tp Steve 0 80 -3"));
-    rt.environment.insert(
-        "CB_BRIDGE_URL".into(),
-        "http://example.com:80/command".into(),
-    );
-    rt.environment
-        .insert("CB_BRIDGE_TOKEN".into(), "a".repeat(24));
-    assert_eq!(rt.run().unwrap_err().code, "CB301");
-}
-#[test]
-fn bridge_sends_authenticated_request_and_requires_acknowledgement() {
-    for success in [true, false] {
-        let tmp = Temp::new();
-        let mut rt = bridge_runtime(&tmp);
-        let server = TcpListener::bind("127.0.0.1:0").unwrap();
-        let port = server.local_addr().unwrap().port();
-        rt.environment.insert(
-            "CB_BRIDGE_URL".into(),
-            format!("http://127.0.0.1:{port}/command"),
-        );
-        rt.environment
-            .insert("CB_BRIDGE_TOKEN".into(), "a".repeat(24));
-        let worker = thread::spawn(move || {
-            let (mut stream, _) = server.accept().unwrap();
-            stream
-                .set_read_timeout(Some(std::time::Duration::from_secs(3)))
-                .unwrap();
-            let mut data = vec![];
-            let mut buf = [0; 1024];
-            loop {
-                let n = stream.read(&mut buf).unwrap();
-                assert!(n > 0);
-                data.extend_from_slice(&buf[..n]);
-                if let Some(end) = data.windows(4).position(|w| w == b"\r\n\r\n") {
-                    let headers = String::from_utf8_lossy(&data[..end]);
-                    let len: usize = headers
-                        .lines()
-                        .find_map(|l| l.strip_prefix("Content-Length: "))
-                        .unwrap()
-                        .parse()
-                        .unwrap();
-                    if data.len() >= end + 4 + len {
-                        break;
-                    }
-                }
-            }
-            let request = String::from_utf8(data).unwrap();
-            assert!(request.contains(&format!("Authorization: Bearer {}", "a".repeat(24))));
-            assert!(request.contains("{\"command\":\"say Hello\"}"));
-            let body = if success {
-                "{\"ok\":true}"
-            } else {
-                "{\"ok\":false}"
-            };
-            write!(
-                stream,
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-                body.len()
-            )
-            .unwrap();
-        });
-        let result = rt.run();
-        worker.join().unwrap();
-        if success {
-            result.unwrap();
-        } else {
-            assert_eq!(result.unwrap_err().code, "CB304");
-        }
-    }
 }

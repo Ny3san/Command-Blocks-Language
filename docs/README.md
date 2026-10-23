@@ -1,6 +1,6 @@
 # Documentação da linguagem Command Blocks
 
-Command Blocks (CB) é uma linguagem de programação para scripts, ferramentas de terminal e datapacks de Minecraft. O código é escrito em inglês; esta documentação é escrita em português.
+Command Blocks (CB) é uma linguagem de programação para scripts e ferramentas de terminal, com geração de datapacks para Minecraft. O código é escrito em inglês; esta documentação é escrita em português.
 
 **Versão da documentação:** 0.1 (desenvolvimento inicial).
 
@@ -46,10 +46,6 @@ Command Blocks (CB) é uma linguagem de programação para scripts, ferramentas 
 
 - [Permissões e segurança](guias/seguranca.md)
 - [Minecraft: datapacks](guias/minecraft.md)
-- [Janelas (experimental)](guias/janelas.md)
-- [Rede (experimental)](guias/rede.md)
-- [Ponte Minecraft](guias/ponte-minecraft.md)
-- [Discord (não funcional)](guias/discord.md)
 
 ### Projeto
 
@@ -63,4 +59,4 @@ Command Blocks (CB) é uma linguagem de programação para scripts, ferramentas 
 - Aliases em português aparecem entre parênteses, por exemplo `print` (`imprimir`).
 - Blocos com `<...>` são modelos de sintaxe e precisam ser substituídos.
 - Erros são citados pelo código `CBxxx`. Veja a [tabela de erros](ferramentas/erros.md).
-- Quando algo não está pronto, a página indica o estado: **funciona**, **experimental**, **não funcional** ou **não implementado**.
+- Esta documentação descreve apenas o que foi verificado. Recursos fora dela não estão disponíveis.

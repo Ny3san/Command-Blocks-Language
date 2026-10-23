@@ -47,9 +47,7 @@ pub fn analyze(mut body: Vec<Stmt>) -> Result<Program> {
             }
             StmtKind::Permission(name) => {
                 *name = catalog::canonical(name);
-                if !["file", "process", "net", "minecraft_bridge", "window"]
-                    .contains(&name.as_str())
-                {
+                if !["file"].contains(&name.as_str()) {
                     return Err(error(
                         s.span,
                         "Permissão desconhecida.",

@@ -14,14 +14,9 @@ pub fn module(name: &str) -> &str {
         "mapa" => "map",
         "entrada_saida" => "io",
         "arquivo" => "file",
-        "processo" => "process",
-        "rede" => "net",
         "evento" => "event",
         "teste" => "test",
         "tempo" => "time",
-        "data" => "date",
-        "ponte_minecraft" => "minecraft_bridge",
-        "janela" => "window",
         _ => name,
     }
 }
@@ -136,8 +131,6 @@ pub fn spec(name: &str) -> Option<Spec> {
         "json.parse" => (vec![Text], Any),
         "json.stringify" => (vec![Any], Text),
         "json.valid" => (vec![Text], Bool),
-        "net.get" => (vec![Text], Map),
-        "net.request" => (vec![Text, Text, Text, Map, Int], Map),
         "text.upper" | "text.lower" | "text.trim" => (vec![Text], Text),
         "text.join" => (vec![List, Text], Text),
         "text.split" => (vec![Text, Text], List),
@@ -175,18 +168,6 @@ pub fn spec(name: &str) -> Option<Spec> {
         "file.exists" => (vec![Text], Bool),
         "file.mkdir" => (vec![Text], Null),
         "file.list" => (vec![Text], List),
-        "process.run" => (vec![Text, List], Map),
-        "window.open" => (vec![Text, Int, Int], Null),
-        "window.label" | "window.input" => (vec![Text, Int, Int, Int, Int], Int),
-        "window.button" => (vec![Text, Text, Int, Int, Int, Int], Int),
-        "window.text" => (vec![Int], Text),
-        "window.set_text" => (vec![Int, Text], Null),
-        "window.run" | "window.close" => (vec![], Null),
-        "discord.start" => (vec![Secret], Null),
-        "discord.connect" => (vec![Secret], Map),
-        "discord.send" => (vec![Text, Text], Map),
-        "discord.reply" => (vec![Text], Null),
-        "minecraft_bridge.send" => (vec![Text], Null),
         "minecraft.message" => (vec![Text, Text], Null),
         "minecraft.give_item" => (vec![Text, Text, Int], Null),
         "minecraft.teleport" => (vec![Text, Number, Number, Number], Null),
@@ -197,23 +178,13 @@ pub fn spec(name: &str) -> Option<Spec> {
     let m = name.split('.').next().unwrap_or("");
     let environment = if m == "minecraft" {
         "minecraft"
-    } else if matches!(
-        m,
-        "file" | "process" | "discord" | "minecraft_bridge" | "time" | "window" | "net"
-    ) || name == "secret"
-        || name.starts_with("io.read_")
-    {
+    } else if matches!(m, "file" | "time") || name == "secret" || name.starts_with("io.read_") {
         "external"
     } else {
         "common"
     };
     let permission = match m {
         "file" => Some("file"),
-        "window" => Some("window"),
-        "net" => Some("net"),
-        "process" => Some("process"),
-        "discord" => Some("net"),
-        "minecraft_bridge" => Some("minecraft_bridge"),
         _ => None,
     };
     Some(Spec {
@@ -224,9 +195,7 @@ pub fn spec(name: &str) -> Option<Spec> {
     })
 }
 pub const MODULES: &[&str] = &[
-    "net",
     "json",
-    "window",
     "text",
     "math",
     "list",
@@ -235,8 +204,5 @@ pub const MODULES: &[&str] = &[
     "event",
     "time",
     "file",
-    "process",
-    "discord",
-    "minecraft_bridge",
     "minecraft",
 ];

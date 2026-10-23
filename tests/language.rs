@@ -40,18 +40,6 @@ fn convert(source: &str) -> Result<BTreeMap<String, String>, Error> {
 }
 
 #[test]
-fn windows_require_permissions_and_reject_minecraft() {
-    assert_eq!(
-        compile("window.open(\"App\", 320, 240)").unwrap_err().code,
-        "CB301"
-    );
-    let source = "permission window\nwindow.open(\"App\", 320, 240)";
-    assert_eq!(run(source).unwrap_err().code, "CB301");
-    assert_eq!(convert(source).unwrap_err().code, "CB201");
-    compile(include_str!("../examples/window.cb")).unwrap();
-}
-
-#[test]
 fn json_library_bilingual_and_private_errors() {
     let output = run(include_str!("../examples/json.cb")).unwrap();
     assert_eq!(output[0], "Alex");
@@ -64,29 +52,6 @@ fn json_library_bilingual_and_private_errors() {
     assert_eq!(error.code, "CB107");
     assert!(!format!("{error:?}").contains("private-invalid-json"));
     assert_eq!(convert("json.valid(\"{}\")").unwrap_err().code, "CB201");
-}
-
-#[test]
-fn network_permissions_and_environment_are_explicit() {
-    assert_eq!(
-        compile("net.get(\"https://example.com/\")")
-            .unwrap_err()
-            .code,
-        "CB301"
-    );
-    assert_eq!(
-        run("permissao rede\nrede.get(\"https://example.com/\")")
-            .unwrap_err()
-            .code,
-        "CB301"
-    );
-    assert_eq!(
-        convert("permission net\nnet.get(\"https://example.com/\")")
-            .unwrap_err()
-            .code,
-        "CB201"
-    );
-    compile("permission net\nnet.request(\"POST\", \"https://example.com/\", \"{}\", {\"Content-Type\": \"application/json\"}, 5000)").unwrap();
 }
 
 #[test]
@@ -209,12 +174,6 @@ fn secret_values_are_redacted_even_inside_collections() {
     rt.run().unwrap();
     assert!(rt.output.iter().all(|v| !v.contains("private-value")));
     assert!(rt.output.iter().all(|v| v.contains("REDACTED")));
-    assert_eq!(
-        compile("permission net\ndiscord.start(\"hard-coded-token\")")
-            .unwrap_err()
-            .code,
-        "CB103"
-    );
 }
 #[test]
 fn file_permissions_and_traversal_are_enforced() {

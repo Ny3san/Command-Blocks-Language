@@ -77,18 +77,8 @@
   "Permission": {
     "prefix": "perm",
     "body": [
-      "permission ${1:net}"
+      "permission ${1:file}"
     ],
     "description": "Declares a permission"
-  },
-  "Window app": {
-    "prefix": "window",
-    "body": [
-      "permission window",
-      "window.open(\"${1:My app}\", 420, 240)",
-      "$0",
-      "window.run()"
-    ],
-    "description": "Starter structure for a Windows window"
   }
 }

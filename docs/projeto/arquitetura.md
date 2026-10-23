@@ -29,8 +29,6 @@ arquivo .cb → lexer → parser → análise semântica → IR tipada
 | `src/catalog.rs` | Nomes canônicos, aliases, tipos, ambientes e permissões de cada função |
 | `src/runtime.rs`, `src/value.rs` | Execução, valores e limites |
 | `src/minecraft.rs` | Verificação e geração do datapack |
-| `src/integrations.rs` | Contratos das integrações opcionais |
-| `src/window.rs`, `src/net.rs` | Janelas e rede (Windows) |
 | `src/json.rs` | Biblioteca JSON |
 | `src/cli.rs` | Comandos, ajuda e geração de projetos |
 | `src/diagnostic.rs` | Erros com código, localização e sugestão, em português e inglês |

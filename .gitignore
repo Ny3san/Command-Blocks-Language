@@ -16,7 +16,6 @@ node_modules/
 
 # CB project files (gerados em tempo de execução)
 *.cb.bak
-.cb-libraries
 
 # Environment secrets
 .env

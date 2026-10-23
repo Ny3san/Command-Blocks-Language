@@ -134,13 +134,3 @@ Exige `permission file` e `--allow file`. Veja [Permissões e segurança](../gui
 | `file.exists(path)` (`arquivo.existe`) | Verifica se o caminho existe |
 | `file.mkdir(path)` (`arquivo.criar_pasta`) | Cria uma pasta |
 | `file.list(path)` (`arquivo.listar`) | Lista os itens de uma pasta |
-
-## Bibliotecas de integração
-
-| Biblioteca | Estado | Página |
-|---|---|---|
-| `net` (`rede`) | Experimental, somente Windows | [Rede](../guias/rede.md) |
-| `window` (`janela`) | Experimental, somente Windows | [Janelas](../guias/janelas.md) |
-| `minecraft` | Disponível para conversão em datapack | [Minecraft](../guias/minecraft.md) |
-| `minecraft_bridge` (`ponte_minecraft`) | Cliente pronto; servidor não incluído | [Ponte Minecraft](../guias/ponte-minecraft.md) |
-| `discord` | Não funciona nesta versão | [Discord](../guias/discord.md) |
